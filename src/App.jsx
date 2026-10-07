@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Customers from "./pages/Customers";
 import CustomerDetails from "./pages/CustomerDetails";
+import Subcategories from "./pages/Subcategories";
 
 
 export default function App() {
@@ -71,6 +72,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+  path="/subcategories"
+  element={
+    <ProtectedRoute>
+      <Subcategories />
+    </ProtectedRoute>
+  }
+/>
 
         <Route
           path="/edit/:id"

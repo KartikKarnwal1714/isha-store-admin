@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import adminApi from "../api/client";
 import Layout from "../components/Layout";
 import { FaTrash } from "react-icons/fa";
-import { categories, subCategories } from "../constants/categories";
+import { categories } from "../constants/categories";
 
 export default function EditProduct() {
   const { id } = useParams();
@@ -12,6 +12,9 @@ export default function EditProduct() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  const [availableSubcategories, setAvailableSubcategories] =
+    useState([]);
 
   const [product, setProduct] = useState({
     name: "",
@@ -24,10 +27,7 @@ export default function EditProduct() {
     featured: false,
   });
 
-  // Existing image URLs already saved on the product
   const [existingImages, setExistingImages] = useState([]);
-
-  // Newly chosen files to upload on save
   const [newImages, setNewImages] = useState([]);
 
   const fetchProduct = async () => {
@@ -66,10 +66,42 @@ export default function EditProduct() {
     }
   };
 
+  const fetchSubcategories = async (category) => {
+    try {
+      if (!category) {
+        setAvailableSubcategories([]);
+        return;
+      }
+
+      const response = await adminApi.get("/subcategories", {
+        params: {
+          category,
+        },
+      });
+
+      setAvailableSubcategories(
+        response.data.subcategories || []
+      );
+    } catch (error) {
+      console.error(
+        "Failed to load subcategories:",
+        error
+      );
+
+      setAvailableSubcategories([]);
+    }
+  };
+
   useEffect(() => {
     fetchProduct();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    if (product.category) {
+      fetchSubcategories(product.category);
+    }
+  }, [product.category]);
 
   const handleCategoryChange = (value) => {
     setProduct({
@@ -81,7 +113,9 @@ export default function EditProduct() {
 
   const removeExistingImage = (index) => {
     const updated = [...existingImages];
+
     updated.splice(index, 1);
+
     setExistingImages(updated);
   };
 
@@ -91,7 +125,9 @@ export default function EditProduct() {
 
   const removeNewImage = (index) => {
     const updated = [...newImages];
+
     updated.splice(index, 1);
+
     setNewImages(updated);
   };
 
@@ -111,14 +147,26 @@ export default function EditProduct() {
       formData.append("name", product.name);
       formData.append("brand", product.brand);
       formData.append("category", product.category);
-      formData.append("subCategory", product.subCategory);
-      formData.append("description", product.description);
-      formData.append("price", Number(product.price || 0));
+      formData.append(
+        "subCategory",
+        product.subCategory
+      );
+      formData.append(
+        "description",
+        product.description
+      );
+      formData.append(
+        "price",
+        Number(product.price || 0)
+      );
       formData.append(
         "originalPrice",
         Number(product.originalPrice || 0)
       );
-      formData.append("featured", product.featured);
+      formData.append(
+        "featured",
+        product.featured
+      );
 
       formData.append(
         "existingImages",
@@ -129,18 +177,27 @@ export default function EditProduct() {
         formData.append("images", image);
       });
 
-      await adminApi.put(`/products/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await adminApi.put(
+        `/products/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
 
       alert("Product updated successfully");
 
       navigate("/products");
     } catch (error) {
       console.log(error);
-      alert(error.response?.data?.message || "Update failed");
+
+      alert(
+        error.response?.data?.message ||
+          "Update failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -165,7 +222,9 @@ export default function EditProduct() {
           </p>
 
           <button
-            onClick={() => navigate("/products")}
+            onClick={() =>
+              navigate("/products")
+            }
             className="bg-black text-white px-6 py-3 rounded-xl"
           >
             Back to Products
@@ -179,18 +238,25 @@ export default function EditProduct() {
     <Layout>
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">Edit Product</h1>
+          <h1 className="text-4xl font-bold">
+            Edit Product
+          </h1>
 
           <button
             type="button"
-            onClick={() => navigate("/products")}
+            onClick={() =>
+              navigate("/products")
+            }
             className="text-gray-600 font-semibold"
           >
             Cancel
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-8"
+        >
           <div className="bg-white p-6 rounded-2xl shadow">
             <h2 className="text-2xl font-bold mb-6">
               Product Info
@@ -203,7 +269,10 @@ export default function EditProduct() {
                 className="border p-4 rounded-xl"
                 value={product.name}
                 onChange={(e) =>
-                  setProduct({ ...product, name: e.target.value })
+                  setProduct({
+                    ...product,
+                    name: e.target.value,
+                  })
                 }
                 required
               />
@@ -214,17 +283,27 @@ export default function EditProduct() {
                 className="border p-4 rounded-xl"
                 value={product.brand}
                 onChange={(e) =>
-                  setProduct({ ...product, brand: e.target.value })
+                  setProduct({
+                    ...product,
+                    brand: e.target.value,
+                  })
                 }
               />
 
               <select
                 className="border p-4 rounded-xl"
                 value={product.category}
-                onChange={(e) => handleCategoryChange(e.target.value)}
+                onChange={(e) =>
+                  handleCategoryChange(
+                    e.target.value
+                  )
+                }
               >
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>
+                  <option
+                    key={cat}
+                    value={cat}
+                  >
                     {cat}
                   </option>
                 ))}
@@ -236,17 +315,25 @@ export default function EditProduct() {
                 onChange={(e) =>
                   setProduct({
                     ...product,
-                    subCategory: e.target.value,
+                    subCategory:
+                      e.target.value,
                   })
                 }
               >
-                <option value="">Select Sub Category</option>
+                <option value="">
+                  Select Sub Category
+                </option>
 
-                {(subCategories[product.category] || []).map((sub) => (
-                  <option key={sub} value={sub}>
-                    {sub}
-                  </option>
-                ))}
+                {availableSubcategories.map(
+                  (subcategory) => (
+                    <option
+                      key={subcategory._id}
+                      value={subcategory.name}
+                    >
+                      {subcategory.name}
+                    </option>
+                  )
+                )}
               </select>
 
               <input
@@ -255,7 +342,10 @@ export default function EditProduct() {
                 className="border p-4 rounded-xl"
                 value={product.price}
                 onChange={(e) =>
-                  setProduct({ ...product, price: e.target.value })
+                  setProduct({
+                    ...product,
+                    price: e.target.value,
+                  })
                 }
               />
 
@@ -263,11 +353,14 @@ export default function EditProduct() {
                 type="number"
                 placeholder="Original Price"
                 className="border p-4 rounded-xl"
-                value={product.originalPrice}
+                value={
+                  product.originalPrice
+                }
                 onChange={(e) =>
                   setProduct({
                     ...product,
-                    originalPrice: e.target.value,
+                    originalPrice:
+                      e.target.value,
                   })
                 }
               />
@@ -281,7 +374,8 @@ export default function EditProduct() {
               onChange={(e) =>
                 setProduct({
                   ...product,
-                  description: e.target.value,
+                  description:
+                    e.target.value,
                 })
               }
             />
@@ -293,21 +387,26 @@ export default function EditProduct() {
                 onChange={(e) =>
                   setProduct({
                     ...product,
-                    featured: e.target.checked,
+                    featured:
+                      e.target.checked,
                   })
                 }
               />
+
               Featured Product
             </label>
 
             <p className="text-sm text-gray-500 mt-3">
-              Note: colours, sizes and stock are edited from the
-              Variant Editor on the Products page, not here.
+              Note: colours, sizes and stock are
+              edited from the Variant Editor on
+              the Products page, not here.
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow">
-            <h2 className="text-2xl font-bold mb-6">Images</h2>
+            <h2 className="text-2xl font-bold mb-6">
+              Images
+            </h2>
 
             {existingImages.length > 0 && (
               <div className="mb-5">
@@ -316,60 +415,87 @@ export default function EditProduct() {
                 </p>
 
                 <div className="flex gap-3 flex-wrap">
-                  {existingImages.map((url, index) => (
-                    <div key={index} className="relative">
+                  {existingImages.map(
+                    (url, index) => (
+                      <div
+                        key={index}
+                        className="relative"
+                      >
+                        <img
+                          src={url}
+                          alt=""
+                          className="w-24 h-24 object-cover rounded-xl"
+                          onError={(e) => {
+                            e.currentTarget.style.display =
+                              "none";
+                          }}
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeExistingImage(
+                              index
+                            )
+                          }
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2"
+                          title="Remove image"
+                        >
+                          <FaTrash size={10} />
+                        </button>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+
+            <p className="font-semibold mb-2">
+              Add New Images
+            </p>
+
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) =>
+                handleNewImages(
+                  e.target.files
+                )
+              }
+            />
+
+            {newImages.length > 0 && (
+              <div className="flex gap-3 flex-wrap mt-5">
+                {newImages.map(
+                  (image, index) => (
+                    <div
+                      key={index}
+                      className="relative"
+                    >
                       <img
-                        src={url}
+                        src={URL.createObjectURL(
+                          image
+                        )}
                         alt=""
                         className="w-24 h-24 object-cover rounded-xl"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
                       />
 
                       <button
                         type="button"
-                        onClick={() => removeExistingImage(index)}
+                        onClick={() =>
+                          removeNewImage(
+                            index
+                          )
+                        }
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2"
                         title="Remove image"
                       >
                         <FaTrash size={10} />
                       </button>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <p className="font-semibold mb-2">Add New Images</p>
-
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={(e) => handleNewImages(e.target.files)}
-            />
-
-            {newImages.length > 0 && (
-              <div className="flex gap-3 flex-wrap mt-5">
-                {newImages.map((image, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(image)}
-                      alt=""
-                      className="w-24 h-24 object-cover rounded-xl"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => removeNewImage(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2"
-                      title="Remove image"
-                    >
-                      <FaTrash size={10} />
-                    </button>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             )}
           </div>
@@ -379,7 +505,9 @@ export default function EditProduct() {
             disabled={loading}
             className="bg-green-600 text-white px-10 py-5 rounded-2xl text-xl font-bold"
           >
-            {loading ? "Saving..." : "Save Changes"}
+            {loading
+              ? "Saving..."
+              : "Save Changes"}
           </button>
         </form>
       </div>

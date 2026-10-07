@@ -104,6 +104,13 @@ export default function Layout({
           </Link>
 
           <Link
+  to="/subcategories"
+  className="hover:bg-gray-800 p-4 rounded-xl transition"
+>
+  Subcategories
+</Link>
+
+          <Link
             to="/orders"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
           >
