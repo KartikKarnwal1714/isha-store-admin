@@ -284,6 +284,18 @@ export default function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const hasMissingPrice = product.colors.some((color) =>
+      color.sizes.some((size) =>
+        Number(size.price || 0) <= 0 &&
+        Number(size.originalPrice || 0) <= 0
+      )
+    );
+
+    if (hasMissingPrice) {
+      alert("Enter either Selling Price or Original Price for every size. You can enter both too.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -314,7 +326,7 @@ export default function AddProduct() {
 
       formData.append(
         "price",
-        Number(firstSize?.price || 0)
+        Number(firstSize?.price || firstSize?.originalPrice || 0)
       );
 
       formData.append(
@@ -337,7 +349,9 @@ export default function AddProduct() {
               ? "Default"
               : size.size,
             stock: Number(size.stock || 0),
-            price: Number(size.price || 0),
+            price: Number(
+              size.price || size.originalPrice || 0
+            ),
             originalPrice: Number(
               size.originalPrice || 0
             ),
@@ -761,7 +775,10 @@ export default function AddProduct() {
 
                       <input
                         type="number"
-                        placeholder="Price"
+                        placeholder="Selling Price (optional)"
+                        aria-label="Selling Price"
+                        min="0"
+                        step="0.01"
                         className="border p-4 rounded-xl"
                         value={size.price}
                         onChange={(e) =>
@@ -772,13 +789,14 @@ export default function AddProduct() {
                             e.target.value
                           )
                         }
-                        required
                       />
 
                       <input
                         type="number"
-                        placeholder="Original Price"
+                        placeholder="Original Price (optional)"
                         className="border p-4 rounded-xl"
+                        min="0"
+                        step="0.01"
                         value={
                           size.originalPrice ||
                           ""
