@@ -9,8 +9,6 @@ import { Link } from "react-router-dom";
 
 import Layout from "../components/Layout";
 
-import VariantEditor from "../components/VariantEditor";
-
 export default function Products() {
 
   const [products, setProducts] =
@@ -18,14 +16,6 @@ export default function Products() {
 
   const [search, setSearch] =
     useState("");
-
-  const [isOpen, setIsOpen] =
-    useState(false);
-
-  const [
-    selectedProduct,
-    setSelectedProduct,
-  ] = useState(null);
 
   // =========================
   // FETCH PRODUCTS
@@ -57,310 +47,6 @@ export default function Products() {
     fetchProducts();
 
   }, []);
-
-  // =========================
-  // OPEN VARIANT EDITOR
-  // =========================
-
-  const openVariantEditor = (
-    product
-  ) => {
-
-    // deep copy to avoid direct mutation
-
-    const cloned =
-      JSON.parse(
-        JSON.stringify(product)
-      );
-
-    setSelectedProduct(cloned);
-
-    setIsOpen(true);
-  };
-
-  // =========================
-  // CLOSE VARIANT EDITOR
-  // =========================
-
-  const closeVariantEditor =
-    () => {
-
-      setIsOpen(false);
-
-      setSelectedProduct(null);
-    };
-
-  // =========================
-  // SAVE PRODUCT
-  // =========================
-
-  const saveProduct =
-    async (updatedProduct) => {
-
-      try {
-
-        await adminApi.put(
-          `/products/${updatedProduct._id}`,
-          updatedProduct
-        );
-
-        await fetchProducts();
-
-      } catch (error) {
-
-        console.log(error);
-
-        alert(
-          "Update Failed"
-        );
-      }
-    };
-
-  // =========================
-  // UPDATE STOCK
-  // =========================
-
-  const updateVariantStock =
-    async (
-      productId,
-      colorIndex,
-      sizeIndex,
-      stock
-    ) => {
-
-      try {
-
-        const updatedProduct =
-          {
-            ...selectedProduct,
-          };
-
-        updatedProduct.colors[
-          colorIndex
-        ].sizes[
-          sizeIndex
-        ].stock =
-          Number(stock);
-
-        setSelectedProduct(
-          updatedProduct
-        );
-
-        await saveProduct(
-          updatedProduct
-        );
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-    };
-
-  // =========================
-  // DELETE IMAGE
-  // =========================
-
-  const deleteImage =
-    async (
-      productId,
-      colorIndex,
-      imageIndex
-    ) => {
-
-      try {
-
-        const updatedProduct =
-          {
-            ...selectedProduct,
-          };
-
-        updatedProduct.colors[
-          colorIndex
-        ].images.splice(
-          imageIndex,
-          1
-        );
-
-        setSelectedProduct(
-          updatedProduct
-        );
-
-        await saveProduct(
-          updatedProduct
-        );
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-    };
-
-  // =========================
-  // ADD COLOR
-  // =========================
-
-  const addColor =
-    async () => {
-
-      try {
-
-        const updatedProduct =
-          {
-            ...selectedProduct,
-          };
-
-        updatedProduct.colors.push({
-
-          colorName:
-            "New Color",
-
-          colorCode:
-            "#000000",
-
-          images: [],
-
-          sizes: [
-            {
-              size: "M",
-              stock: 0,
-            },
-          ],
-        });
-
-        setSelectedProduct(
-          updatedProduct
-        );
-
-        await saveProduct(
-          updatedProduct
-        );
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-    };
-
-  // =========================
-  // DELETE COLOR
-  // =========================
-
-  const deleteColor =
-    async (
-      productId,
-      colorIndex
-    ) => {
-
-      try {
-
-        const updatedProduct =
-          {
-            ...selectedProduct,
-          };
-
-        updatedProduct.colors.splice(
-          colorIndex,
-          1
-        );
-
-        setSelectedProduct(
-          updatedProduct
-        );
-
-        await saveProduct(
-          updatedProduct
-        );
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-    };
-
-  // =========================
-  // ADD SIZE
-  // =========================
-
-  const addSize =
-    async (
-      productId,
-      colorIndex
-    ) => {
-
-      try {
-
-        const updatedProduct =
-          {
-            ...selectedProduct,
-          };
-
-        updatedProduct.colors[
-          colorIndex
-        ].sizes.push({
-
-          size: "M",
-
-          stock: 0,
-        });
-
-        setSelectedProduct(
-          updatedProduct
-        );
-
-        await saveProduct(
-          updatedProduct
-        );
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-    };
-
-  // =========================
-  // DELETE SIZE
-  // =========================
-
-  const deleteSize =
-    async (
-      productId,
-      colorIndex,
-      sizeIndex
-    ) => {
-
-      try {
-
-        const updatedProduct =
-          {
-            ...selectedProduct,
-          };
-
-        updatedProduct.colors[
-          colorIndex
-        ].sizes.splice(
-          sizeIndex,
-          1
-        );
-
-        setSelectedProduct(
-          updatedProduct
-        );
-
-        await saveProduct(
-          updatedProduct
-        );
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-    };
 
   return (
     <Layout>
@@ -608,7 +294,7 @@ export default function Products() {
 
                   {/* ACTIONS */}
 
-                  <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-6">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-6">
 
                     <Link
                       to={`/edit/${product._id}`}
@@ -618,19 +304,6 @@ export default function Products() {
                       Edit
 
                     </Link>
-
-                    <button
-                      onClick={() =>
-                        openVariantEditor(
-                          product
-                        )
-                      }
-                      className="bg-blue-500 text-white py-3 rounded-2xl font-bold text-sm sm:text-base px-1"
-                    >
-
-                      Variant Editor
-
-                    </button>
 
                     <button
                       onClick={async () => {
@@ -678,28 +351,6 @@ export default function Products() {
           })}
 
       </div>
-
-      {/* VARIANT EDITOR */}
-
-      <VariantEditor
-        isOpen={isOpen}
-        onClose={
-          closeVariantEditor
-        }
-        product={selectedProduct}
-        updateVariantStock={
-          updateVariantStock
-        }
-        deleteImage={
-          deleteImage
-        }
-        addColor={addColor}
-        deleteColor={
-          deleteColor
-        }
-        addSize={addSize}
-        deleteSize={deleteSize}
-      />
 
     </Layout>
   );
