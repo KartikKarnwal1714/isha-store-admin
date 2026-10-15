@@ -1,13 +1,11 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import adminApi from "../api/client";
 import Layout from "../components/Layout";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { categories } from "../constants/categories";
-<<<<<<< HEAD
 import ColorStockBadge from "../components/ColorStockBadge";
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
 const cosmeticCategories = [
   "Mens-Cosmetics",
@@ -42,29 +40,21 @@ const emptySize = () => ({
 const emptyColor = () => ({
   colorName: "",
   colorCode: "#000000",
-<<<<<<< HEAD
   lowStockThreshold: 5,
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-  existingImages: [], // already saved on the server
-  images: [], // newly chosen files
-  imageUrls: [""], // new URL / base64 images
+  existingImages: [],
+  images: [],
+  imageUrls: [""],
   sizes: [emptySize()],
 });
 
-// Which kind of size field a category uses
 const sizeKind = (category) => {
   if (cosmeticCategories.includes(category)) return "cosmetic";
   if (category === "Kids") return "kids";
   if (category === "Jewellery") return "jewellery";
-<<<<<<< HEAD
   if (category === "New Born") return "newborn";
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
   return "clothing";
 };
 
-// Preview of a newly chosen file (revokes the object URL on cleanup)
 function FilePreview({ file, onRemove }) {
   const src = useMemo(() => URL.createObjectURL(file), [file]);
 
@@ -76,13 +66,13 @@ function FilePreview({ file, onRemove }) {
     <div className="relative">
       <img
         src={src}
-        alt=""
-        className="w-24 h-24 object-cover rounded-xl"
+        alt={file.name}
+        className="h-24 w-24 rounded-xl object-cover"
       />
       <button
         type="button"
         onClick={onRemove}
-        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2"
+        className="absolute -right-2 -top-2 rounded-full bg-red-500 p-2 text-white"
         title="Remove image"
       >
         <FaTrash size={10} />
@@ -111,13 +101,10 @@ export default function EditProduct() {
     colors: [emptyColor()],
   });
 
-  // ------------------------------------------------------
-  // LOAD PRODUCT
-  // ------------------------------------------------------
-
   const fetchProduct = async () => {
     try {
       setFetching(true);
+      setNotFound(false);
 
       const res = await adminApi.get(`/products/${id}`);
       const p = res.data.product;
@@ -132,10 +119,7 @@ export default function EditProduct() {
           ? p.colors.map((color) => ({
               colorName: color.colorName || "",
               colorCode: color.colorCode || "#000000",
-<<<<<<< HEAD
               lowStockThreshold: color.lowStockThreshold ?? 5,
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
               existingImages: Array.isArray(color.images)
                 ? color.images.filter(Boolean)
                 : [],
@@ -162,11 +146,11 @@ export default function EditProduct() {
         category: p.category || "Men",
         subCategory: p.subCategory || "",
         description: p.description || "",
-        featured: !!p.featured,
+        featured: Boolean(p.featured),
         colors,
       });
     } catch (error) {
-      console.log(error);
+      console.error("Failed to load product:", error);
       setNotFound(true);
     } finally {
       setFetching(false);
@@ -206,15 +190,11 @@ export default function EditProduct() {
   const isKids = product.category === "Kids";
   const isJewellery = product.category === "Jewellery";
 
-  // ------------------------------------------------------
-  // HELPERS (immutable updates)
-  // ------------------------------------------------------
-
   const updateColor = (colorIndex, updater) => {
     setProduct((prev) => ({
       ...prev,
-      colors: prev.colors.map((color, i) =>
-        i === colorIndex ? updater(color) : color
+      colors: prev.colors.map((color, index) =>
+        index === colorIndex ? updater(color) : color
       ),
     }));
   };
@@ -224,9 +204,6 @@ export default function EditProduct() {
       const kindChanged =
         sizeKind(prev.category) !== sizeKind(value);
 
-      // Colours, stock, prices and images are kept. If the size
-      // field type changes (e.g. S/M/L -> age or weight), the old
-      // size labels no longer make sense, so they are cleared.
       return {
         ...prev,
         category: value,
@@ -265,7 +242,9 @@ export default function EditProduct() {
   const deleteColor = (colorIndex) => {
     setProduct((prev) => ({
       ...prev,
-      colors: prev.colors.filter((_, i) => i !== colorIndex),
+      colors: prev.colors.filter(
+        (_, index) => index !== colorIndex
+      ),
     }));
   };
 
@@ -286,45 +265,53 @@ export default function EditProduct() {
   const deleteSize = (colorIndex, sizeIndex) => {
     updateColor(colorIndex, (color) => ({
       ...color,
-      sizes: color.sizes.filter((_, i) => i !== sizeIndex),
-    }));
-  };
-
-  const handleSizeChange = (colorIndex, sizeIndex, field, value) => {
-    updateColor(colorIndex, (color) => ({
-      ...color,
-      sizes: color.sizes.map((size, i) =>
-        i === sizeIndex ? { ...size, [field]: value } : size
+      sizes: color.sizes.filter(
+        (_, index) => index !== sizeIndex
       ),
     }));
   };
 
-  // Saved images
+  const handleSizeChange = (
+    colorIndex,
+    sizeIndex,
+    field,
+    value
+  ) => {
+    updateColor(colorIndex, (color) => ({
+      ...color,
+      sizes: color.sizes.map((size, index) =>
+        index === sizeIndex
+          ? { ...size, [field]: value }
+          : size
+      ),
+    }));
+  };
+
   const removeExistingImage = (colorIndex, imageIndex) => {
     updateColor(colorIndex, (color) => ({
       ...color,
       existingImages: color.existingImages.filter(
-        (_, i) => i !== imageIndex
+        (_, index) => index !== imageIndex
       ),
     }));
   };
 
-  // Newly chosen files
   const handleImageUpload = (colorIndex, files) => {
     updateColor(colorIndex, (color) => ({
       ...color,
-      images: [...color.images, ...Array.from(files)],
+      images: [...color.images, ...Array.from(files || [])],
     }));
   };
 
   const removeNewImage = (colorIndex, imageIndex) => {
     updateColor(colorIndex, (color) => ({
       ...color,
-      images: color.images.filter((_, i) => i !== imageIndex),
+      images: color.images.filter(
+        (_, index) => index !== imageIndex
+      ),
     }));
   };
 
-  // Image URLs / base64
   const addImageUrl = (colorIndex) => {
     updateColor(colorIndex, (color) => ({
       ...color,
@@ -332,11 +319,15 @@ export default function EditProduct() {
     }));
   };
 
-  const handleImageUrlChange = (colorIndex, urlIndex, value) => {
+  const handleImageUrlChange = (
+    colorIndex,
+    urlIndex,
+    value
+  ) => {
     updateColor(colorIndex, (color) => ({
       ...color,
-      imageUrls: color.imageUrls.map((url, i) =>
-        i === urlIndex ? value : url
+      imageUrls: color.imageUrls.map((url, index) =>
+        index === urlIndex ? value : url
       ),
     }));
   };
@@ -344,7 +335,9 @@ export default function EditProduct() {
   const deleteImageUrl = (colorIndex, urlIndex) => {
     updateColor(colorIndex, (color) => ({
       ...color,
-      imageUrls: color.imageUrls.filter((_, i) => i !== urlIndex),
+      imageUrls: color.imageUrls.filter(
+        (_, index) => index !== urlIndex
+      ),
     }));
   };
 
@@ -358,12 +351,8 @@ export default function EditProduct() {
     0
   );
 
-  // ------------------------------------------------------
-  // SAVE
-  // ------------------------------------------------------
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     if (!product.name.trim()) {
       alert("Product name is required");
@@ -399,15 +388,12 @@ export default function EditProduct() {
       const colorsWithoutFiles = product.colors.map((color) => ({
         colorName: color.colorName,
         colorCode: color.colorCode,
-<<<<<<< HEAD
         lowStockThreshold: Number(
           color.lowStockThreshold === "" ||
             color.lowStockThreshold === undefined
             ? 5
             : color.lowStockThreshold
         ),
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
         imageCount: color.images.length,
         existingImages: color.existingImages,
         imageUrls: color.imageUrls.filter(
@@ -423,10 +409,11 @@ export default function EditProduct() {
         })),
       }));
 
-      formData.append("colors", JSON.stringify(colorsWithoutFiles));
+      formData.append(
+        "colors",
+        JSON.stringify(colorsWithoutFiles)
+      );
 
-      // Files must be appended in colour order so the server can
-      // assign them back using each colour's imageCount.
       product.colors.forEach((color) => {
         color.images.forEach((image) => {
           formData.append("images", image);
@@ -440,10 +427,9 @@ export default function EditProduct() {
       });
 
       alert("Product updated successfully");
-
       navigate("/products");
     } catch (error) {
-      console.log(error);
+      console.error("Product update failed:", error);
 
       alert(
         error.response?.data?.message || "Update failed"
@@ -453,14 +439,10 @@ export default function EditProduct() {
     }
   };
 
-  // ------------------------------------------------------
-  // RENDER
-  // ------------------------------------------------------
-
   if (fetching) {
     return (
       <Layout>
-        <div className="max-w-7xl mx-auto p-10 text-xl font-semibold">
+        <div className="mx-auto max-w-7xl p-10 text-xl font-semibold">
           Loading product...
         </div>
       </Layout>
@@ -470,14 +452,14 @@ export default function EditProduct() {
   if (notFound) {
     return (
       <Layout>
-        <div className="max-w-7xl mx-auto p-10">
-          <p className="text-xl font-semibold mb-5">
+        <div className="mx-auto max-w-7xl p-10">
+          <p className="mb-5 text-xl font-semibold">
             Product not found.
           </p>
-
           <button
+            type="button"
             onClick={() => navigate("/products")}
-            className="bg-black text-white px-6 py-3 rounded-xl"
+            className="rounded-xl bg-black px-6 py-3 text-white"
           >
             Back to Products
           </button>
@@ -488,14 +470,13 @@ export default function EditProduct() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 flex items-center justify-between">
           <h1 className="text-4xl font-bold">Edit Product</h1>
-
           <button
             type="button"
             onClick={() => navigate("/products")}
-            className="text-gray-600 font-semibold"
+            className="font-semibold text-gray-600"
           >
             Cancel
           </button>
@@ -503,19 +484,22 @@ export default function EditProduct() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* PRODUCT INFO */}
-          <div className="bg-white p-6 rounded-2xl shadow">
-            <h2 className="text-2xl font-bold mb-6">
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <h2 className="mb-6 text-2xl font-bold">
               Product Info
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <input
                 type="text"
                 placeholder="Product Name"
-                className="border p-4 rounded-xl"
+                className="rounded-xl border p-4"
                 value={product.name}
-                onChange={(e) =>
-                  setProduct({ ...product, name: e.target.value })
+                onChange={(event) =>
+                  setProduct({
+                    ...product,
+                    name: event.target.value,
+                  })
                 }
                 required
               />
@@ -523,40 +507,42 @@ export default function EditProduct() {
               <input
                 type="text"
                 placeholder="Brand"
-                className="border p-4 rounded-xl"
+                className="rounded-xl border p-4"
                 value={product.brand}
-                onChange={(e) =>
-                  setProduct({ ...product, brand: e.target.value })
+                onChange={(event) =>
+                  setProduct({
+                    ...product,
+                    brand: event.target.value,
+                  })
                 }
               />
 
               <select
-                className="border p-4 rounded-xl"
+                className="rounded-xl border p-4"
                 value={product.category}
-                onChange={(e) =>
-                  handleCategoryChange(e.target.value)
+                onChange={(event) =>
+                  handleCategoryChange(event.target.value)
                 }
               >
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
                   </option>
                 ))}
               </select>
 
               <select
-                className="border p-4 rounded-xl"
+                className="rounded-xl border p-4"
                 value={product.subCategory}
-                onChange={(e) =>
+                onChange={(event) =>
                   setProduct({
                     ...product,
-                    subCategory: e.target.value,
+                    subCategory: event.target.value,
                   })
                 }
                 required
               >
                 <option value="">Select Sub Category</option>
-
                 {availableSubcategories.map((subcategory) => (
                   <option
                     key={subcategory._id}
@@ -570,25 +556,25 @@ export default function EditProduct() {
 
             <textarea
               placeholder="Description"
-              className="border p-4 rounded-xl w-full mt-5"
-              rows="5"
+              className="mt-5 w-full rounded-xl border p-4"
+              rows={5}
               value={product.description}
-              onChange={(e) =>
+              onChange={(event) =>
                 setProduct({
                   ...product,
-                  description: e.target.value,
+                  description: event.target.value,
                 })
               }
             />
 
-            <label className="flex items-center gap-3 mt-5 font-semibold">
+            <label className="mt-5 flex items-center gap-3 font-semibold">
               <input
                 type="checkbox"
                 checked={product.featured}
-                onChange={(e) =>
+                onChange={(event) =>
                   setProduct({
                     ...product,
-                    featured: e.target.checked,
+                    featured: event.target.checked,
                   })
                 }
               />
@@ -600,45 +586,38 @@ export default function EditProduct() {
           {product.colors.map((color, colorIndex) => (
             <div
               key={colorIndex}
-              className="bg-white p-6 rounded-2xl shadow"
+              className="rounded-2xl bg-white p-6 shadow"
             >
-              <div className="flex justify-between items-center mb-5">
-<<<<<<< HEAD
+              <div className="mb-5 flex items-center justify-between">
                 <div className="flex flex-wrap items-center gap-3">
                   <h2 className="text-2xl font-bold">
                     Color Variant {colorIndex + 1}
                   </h2>
-
                   <ColorStockBadge color={color} />
                 </div>
-=======
-                <h2 className="text-2xl font-bold">
-                  Color Variant {colorIndex + 1}
-                </h2>
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
                 {product.colors.length > 1 && (
                   <button
                     type="button"
                     onClick={() => deleteColor(colorIndex)}
-                    className="bg-red-500 text-white p-3 rounded-xl"
+                    className="rounded-xl bg-red-500 p-3 text-white"
                   >
                     <FaTrash />
                   </button>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+              <div className="mb-5 grid grid-cols-1 gap-5 md:grid-cols-2">
                 <input
                   type="text"
                   placeholder="Color Name"
-                  className="border p-4 rounded-xl"
+                  className="rounded-xl border p-4"
                   value={color.colorName}
-                  onChange={(e) =>
+                  onChange={(event) =>
                     handleColorChange(
                       colorIndex,
                       "colorName",
-                      e.target.value
+                      event.target.value
                     )
                   }
                 />
@@ -647,63 +626,63 @@ export default function EditProduct() {
                   type="color"
                   className="h-14 w-full rounded-xl"
                   value={color.colorCode}
-                  onChange={(e) =>
+                  onChange={(event) =>
                     handleColorChange(
                       colorIndex,
                       "colorCode",
-                      e.target.value
+                      event.target.value
                     )
                   }
                 />
               </div>
 
-<<<<<<< HEAD
               <div className="mb-5">
-                <label className="font-semibold block mb-2">
+                <label className="mb-2 block font-semibold">
                   Low-stock alert for this colour
                 </label>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <input
                     type="number"
                     min="0"
                     placeholder="5"
-                    className="border p-4 rounded-xl w-40"
+                    className="w-40 rounded-xl border p-4"
                     value={color.lowStockThreshold}
-                    onChange={(e) =>
+                    onChange={(event) =>
                       handleColorChange(
                         colorIndex,
                         "lowStockThreshold",
-                        e.target.value
+                        event.target.value
                       )
                     }
                   />
 
                   <p className="text-sm text-gray-500">
                     Colour shows as Low Stock when its total
-                    stock (all sizes) is this number or less.
+                    stock across all sizes is this number or less.
                   </p>
                 </div>
               </div>
 
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-              {/* CURRENT (SAVED) IMAGES */}
+              {/* CURRENT IMAGES */}
               {color.existingImages.length > 0 && (
                 <div className="mb-5">
-                  <p className="font-semibold mb-2">
+                  <p className="mb-2 font-semibold">
                     Current Images
                   </p>
 
-                  <div className="flex gap-3 flex-wrap">
+                  <div className="flex flex-wrap gap-3">
                     {color.existingImages.map((url, index) => (
-                      <div key={`existing-${index}`} className="relative">
+                      <div
+                        key={`existing-${index}`}
+                        className="relative"
+                      >
                         <img
                           src={url}
                           alt=""
-                          className="w-24 h-24 object-cover rounded-xl"
-                          onError={(e) => {
-                            e.currentTarget.style.opacity = "0.3";
+                          className="h-24 w-24 rounded-xl object-cover"
+                          onError={(event) => {
+                            event.currentTarget.style.opacity = "0.3";
                           }}
                         />
 
@@ -712,7 +691,7 @@ export default function EditProduct() {
                           onClick={() =>
                             removeExistingImage(colorIndex, index)
                           }
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2"
+                          className="absolute -right-2 -top-2 rounded-full bg-red-500 p-2 text-white"
                           title="Remove image"
                         >
                           <FaTrash size={10} />
@@ -725,7 +704,7 @@ export default function EditProduct() {
 
               {/* UPLOAD FILES */}
               <div className="mb-5">
-                <p className="font-semibold mb-2">
+                <p className="mb-2 font-semibold">
                   Choose Image File
                 </p>
 
@@ -733,15 +712,18 @@ export default function EditProduct() {
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={(e) => {
-                    handleImageUpload(colorIndex, e.target.files);
-                    e.target.value = "";
+                  onChange={(event) => {
+                    handleImageUpload(
+                      colorIndex,
+                      event.target.files
+                    );
+                    event.target.value = "";
                   }}
                 />
               </div>
 
               {color.images.length > 0 && (
-                <div className="flex gap-3 flex-wrap mb-5">
+                <div className="mb-5 flex flex-wrap gap-3">
                   {color.images.map((image, index) => (
                     <FilePreview
                       key={`file-${index}-${image.name}`}
@@ -755,23 +737,26 @@ export default function EditProduct() {
               )}
 
               {/* IMAGE URLS */}
-              <div className="space-y-3 mb-5">
+              <div className="mb-5 space-y-3">
                 <p className="font-semibold">
                   Or Enter Image URL / Base64
                 </p>
 
                 {color.imageUrls.map((url, urlIndex) => (
-                  <div key={urlIndex} className="flex gap-3">
+                  <div
+                    key={urlIndex}
+                    className="flex gap-3"
+                  >
                     <input
                       type="text"
-                      placeholder="Enter Image URL, Base64, Cloudinary, Google Drive URL"
-                      className="border p-4 rounded-xl w-full"
+                      placeholder="Enter image URL or Base64"
+                      className="w-full rounded-xl border p-4"
                       value={url}
-                      onChange={(e) =>
+                      onChange={(event) =>
                         handleImageUrlChange(
                           colorIndex,
                           urlIndex,
-                          e.target.value
+                          event.target.value
                         )
                       }
                     />
@@ -782,7 +767,7 @@ export default function EditProduct() {
                         onClick={() =>
                           deleteImageUrl(colorIndex, urlIndex)
                         }
-                        className="bg-red-500 text-white px-4 rounded-xl"
+                        className="rounded-xl bg-red-500 px-4 text-white"
                       >
                         Delete
                       </button>
@@ -793,14 +778,16 @@ export default function EditProduct() {
                 <button
                   type="button"
                   onClick={() => addImageUrl(colorIndex)}
-                  className="bg-blue-500 text-white px-5 py-3 rounded-xl"
+                  className="rounded-xl bg-blue-500 px-5 py-3 text-white"
                 >
                   Add Image URL
                 </button>
               </div>
 
-              {color.imageUrls.some((url) => url && url.length > 0) && (
-                <div className="flex gap-3 flex-wrap mb-6">
+              {color.imageUrls.some(
+                (url) => url && url.length > 0
+              ) && (
+                <div className="mb-6 flex flex-wrap gap-3">
                   {color.imageUrls
                     .filter((url) => url && url.length > 0)
                     .map((url, index) => (
@@ -808,9 +795,9 @@ export default function EditProduct() {
                         key={`url-${index}`}
                         src={url}
                         alt=""
-                        className="w-24 h-24 object-cover rounded-xl"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
+                        className="h-24 w-24 rounded-xl object-cover"
+                        onError={(event) => {
+                          event.currentTarget.style.display = "none";
                         }}
                       />
                     ))}
@@ -821,41 +808,40 @@ export default function EditProduct() {
               {color.sizes.map((size, sizeIndex) => (
                 <div
                   key={sizeIndex}
-                  className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4"
+                  className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-5"
                 >
                   {isCosmetic ? (
                     <input
                       type="text"
-                      placeholder="Amount / Weight, like 50gm, 100ml"
-                      className="border p-4 rounded-xl"
+                      placeholder="Amount / Weight, e.g. 50gm, 100ml"
+                      className="rounded-xl border p-4"
                       value={size.size}
-                      onChange={(e) =>
+                      onChange={(event) =>
                         handleSizeChange(
                           colorIndex,
                           sizeIndex,
                           "size",
-                          e.target.value
+                          event.target.value
                         )
                       }
                       required
                     />
                   ) : isKids ? (
                     <select
-                      className="border p-4 rounded-xl"
+                      className="rounded-xl border p-4"
                       value={size.size}
-                      onChange={(e) =>
+                      onChange={(event) =>
                         handleSizeChange(
                           colorIndex,
                           sizeIndex,
                           "size",
-                          e.target.value
+                          event.target.value
                         )
                       }
                       required
                     >
                       <option value="">Select Age</option>
 
-                      {/* keep a legacy value selectable if it is not in the list */}
                       {size.size &&
                         !kidsAgeOptions.includes(size.size) && (
                           <option value={size.size}>
@@ -872,30 +858,26 @@ export default function EditProduct() {
                   ) : isJewellery ? (
                     <input
                       type="text"
-                      className="border p-4 rounded-xl bg-gray-100"
+                      className="rounded-xl border bg-gray-100 p-4"
                       value="Default"
                       readOnly
                     />
                   ) : (
                     <input
                       type="text"
-<<<<<<< HEAD
                       placeholder={
                         product.category === "New Born"
-                          ? "Size, like 0-3 Months, 3-6 Months"
-                          : "Size, like S, M, L, XL"
+                          ? "Size, e.g. 0-3 Months, 3-6 Months"
+                          : "Size, e.g. S, M, L, XL"
                       }
-=======
-                      placeholder="Size, like S, M, L, XL"
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-                      className="border p-4 rounded-xl"
+                      className="rounded-xl border p-4"
                       value={size.size}
-                      onChange={(e) =>
+                      onChange={(event) =>
                         handleSizeChange(
                           colorIndex,
                           sizeIndex,
                           "size",
-                          e.target.value
+                          event.target.value
                         )
                       }
                       required
@@ -905,14 +887,14 @@ export default function EditProduct() {
                   <input
                     type="number"
                     placeholder="Price"
-                    className="border p-4 rounded-xl"
+                    className="rounded-xl border p-4"
                     value={size.price}
-                    onChange={(e) =>
+                    onChange={(event) =>
                       handleSizeChange(
                         colorIndex,
                         sizeIndex,
                         "price",
-                        e.target.value
+                        event.target.value
                       )
                     }
                     required
@@ -921,14 +903,14 @@ export default function EditProduct() {
                   <input
                     type="number"
                     placeholder="Original Price"
-                    className="border p-4 rounded-xl"
+                    className="rounded-xl border p-4"
                     value={size.originalPrice || ""}
-                    onChange={(e) =>
+                    onChange={(event) =>
                       handleSizeChange(
                         colorIndex,
                         sizeIndex,
                         "originalPrice",
-                        e.target.value
+                        event.target.value
                       )
                     }
                   />
@@ -936,14 +918,14 @@ export default function EditProduct() {
                   <input
                     type="number"
                     placeholder="Stock"
-                    className="border p-4 rounded-xl"
+                    className="rounded-xl border p-4"
                     value={size.stock}
-                    onChange={(e) =>
+                    onChange={(event) =>
                       handleSizeChange(
                         colorIndex,
                         sizeIndex,
                         "stock",
-                        e.target.value
+                        event.target.value
                       )
                     }
                     required
@@ -955,7 +937,7 @@ export default function EditProduct() {
                       onClick={() =>
                         deleteSize(colorIndex, sizeIndex)
                       }
-                      className="bg-red-500 text-white rounded-xl py-3"
+                      className="rounded-xl bg-red-500 py-3 text-white"
                     >
                       Delete
                     </button>
@@ -967,13 +949,13 @@ export default function EditProduct() {
                 <button
                   type="button"
                   onClick={() => addSize(colorIndex)}
-                  className="bg-blue-500 text-white px-5 py-3 rounded-xl"
+                  className="rounded-xl bg-blue-500 px-5 py-3 text-white"
                 >
                   {isCosmetic
                     ? "Add Amount Variant"
                     : isKids
-                    ? "Add Age Variant"
-                    : "Add Size"}
+                      ? "Add Age Variant"
+                      : "Add Size"}
                 </button>
               )}
             </div>
@@ -982,20 +964,20 @@ export default function EditProduct() {
           <button
             type="button"
             onClick={addColor}
-            className="bg-black text-white px-6 py-4 rounded-2xl flex items-center gap-3"
+            className="flex items-center gap-3 rounded-2xl bg-black px-6 py-4 text-white"
           >
             <FaPlus />
             Add Color Variant
           </button>
 
-          <div className="bg-yellow-100 p-5 rounded-2xl text-2xl font-bold">
+          <div className="rounded-2xl bg-yellow-100 p-5 text-2xl font-bold">
             Total Stock: {totalStock}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-600 text-white px-10 py-5 rounded-2xl text-xl font-bold"
+            className="rounded-2xl bg-green-600 px-10 py-5 text-xl font-bold text-white disabled:opacity-50"
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>

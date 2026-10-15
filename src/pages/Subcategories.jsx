@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import adminApi from "../api/client";
@@ -10,10 +11,7 @@ const categories = [
   "Mens-Cosmetics",
   "Womens-Cosmetics",
   "Kids-Cosmetics",
-<<<<<<< HEAD
   "New Born",
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 ];
 
 const emptyForm = {
@@ -27,7 +25,7 @@ const emptyForm = {
 
 export default function Subcategories() {
   const [subcategories, setSubcategories] = useState([]);
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState({ ...emptyForm });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -61,6 +59,11 @@ export default function Subcategories() {
       ...previous,
       [field]: value,
     }));
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({ ...emptyForm });
   };
 
   const handleSubmit = async (event) => {
@@ -99,10 +102,7 @@ export default function Subcategories() {
 
         alert("Subcategory updated successfully");
       } else {
-        await adminApi.post(
-          "/subcategories",
-          data
-        );
+        await adminApi.post("/subcategories", data);
 
         alert("Subcategory added successfully");
       }
@@ -139,18 +139,8 @@ export default function Subcategories() {
     });
   };
 
-  const resetForm = () => {
-    setEditingId(null);
-
-    setForm({
-      ...emptyForm,
-    });
-  };
-
   const toggleSubcategory = async (subcategory) => {
-    const action = subcategory.isActive
-      ? "hide"
-      : "restore";
+    const action = subcategory.isActive ? "hide" : "restore";
 
     const confirmed = window.confirm(
       `Are you sure you want to ${action} "${subcategory.name}"?`
@@ -197,88 +187,59 @@ export default function Subcategories() {
     }
   };
 
-  const filteredSubcategories =
-    subcategories.filter((subcategory) => {
-      if (selectedCategory === "All") {
-        return true;
-      }
-
-      return (
-        subcategory.category ===
-        selectedCategory
-      );
-    });
+  const filteredSubcategories = subcategories.filter(
+    (subcategory) =>
+      selectedCategory === "All" ||
+      subcategory.category === selectedCategory
+  );
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto">
-
-        {/* HEADER */}
-
+      <div className="mx-auto max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold">
+          <h1 className="text-3xl font-bold sm:text-4xl">
             Subcategory Management
           </h1>
 
-          <p className="text-gray-500 mt-2">
-            Add, edit, hide and restore
-            website subcategories.
+          <p className="mt-2 text-gray-500">
+            Add, edit, hide and restore website subcategories.
           </p>
         </div>
 
-        {/* FORM */}
-
-        <div className="bg-white rounded-2xl shadow p-5 sm:p-8 mb-8">
-
-          <div className="flex items-center justify-between mb-6">
-
+        <div className="mb-8 rounded-2xl bg-white p-5 shadow sm:p-8">
+          <div className="mb-6 flex items-center justify-between gap-4">
             <h2 className="text-2xl font-bold">
-              {editingId
-                ? "Edit Subcategory"
-                : "Add Subcategory"}
+              {editingId ? "Edit Subcategory" : "Add Subcategory"}
             </h2>
 
             {editingId && (
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300"
+                className="rounded-xl bg-gray-200 px-4 py-2 hover:bg-gray-300"
               >
                 Cancel Edit
               </button>
             )}
-
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
-
-            {/* CATEGORY + NAME */}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
-                <label className="block font-semibold mb-2">
+                <label className="mb-2 block font-semibold">
                   Main Category
                 </label>
 
                 <select
                   value={form.category}
                   onChange={(event) =>
-                    handleChange(
-                      "category",
-                      event.target.value
-                    )
+                    handleChange("category", event.target.value)
                   }
-                  className="w-full border p-4 rounded-xl"
+                  className="w-full rounded-xl border p-4"
+                  required
                 >
                   {categories.map((category) => (
-                    <option
-                      key={category}
-                      value={category}
-                    >
+                    <option key={category} value={category}>
                       {category}
                     </option>
                   ))}
@@ -286,7 +247,7 @@ export default function Subcategories() {
               </div>
 
               <div>
-                <label className="block font-semibold mb-2">
+                <label className="mb-2 block font-semibold">
                   Subcategory Name
                 </label>
 
@@ -295,21 +256,16 @@ export default function Subcategories() {
                   placeholder="Example: Trunks"
                   value={form.name}
                   onChange={(event) =>
-                    handleChange(
-                      "name",
-                      event.target.value
-                    )
+                    handleChange("name", event.target.value)
                   }
-                  className="w-full border p-4 rounded-xl"
+                  className="w-full rounded-xl border p-4"
+                  required
                 />
               </div>
-
             </div>
 
-            {/* IMAGE */}
-
             <div>
-              <label className="block font-semibold mb-2">
+              <label className="mb-2 block font-semibold">
                 Subcategory Photo URL
               </label>
 
@@ -318,64 +274,50 @@ export default function Subcategories() {
                 placeholder="https://example.com/image.jpg"
                 value={form.image}
                 onChange={(event) =>
-                  handleChange(
-                    "image",
-                    event.target.value
-                  )
+                  handleChange("image", event.target.value)
                 }
-                className="w-full border p-4 rounded-xl"
+                className="w-full rounded-xl border p-4"
+                required
               />
             </div>
 
-            {/* IMAGE PREVIEW */}
-
             {form.image && (
               <div className="w-full md:w-72">
-
-                <p className="font-semibold mb-2">
-                  Preview
-                </p>
+                <p className="mb-2 font-semibold">Preview</p>
 
                 <img
                   src={form.image}
-                  alt="Preview"
-                  className="w-full h-48 object-cover rounded-2xl border"
+                  alt="Subcategory preview"
+                  className="h-48 w-full rounded-2xl border object-cover"
                   onError={(event) => {
-                    event.currentTarget.style.display =
-                      "none";
+                    event.currentTarget.style.display = "none";
+                  }}
+                  onLoad={(event) => {
+                    event.currentTarget.style.display = "block";
                   }}
                 />
-
               </div>
             )}
 
-            {/* DESCRIPTION */}
-
             <div>
-              <label className="block font-semibold mb-2">
+              <label className="mb-2 block font-semibold">
                 Description
               </label>
 
               <textarea
-                rows="4"
+                rows={4}
                 placeholder="Optional description"
                 value={form.description}
                 onChange={(event) =>
-                  handleChange(
-                    "description",
-                    event.target.value
-                  )
+                  handleChange("description", event.target.value)
                 }
-                className="w-full border p-4 rounded-xl resize-none"
+                className="w-full resize-none rounded-xl border p-4"
               />
             </div>
 
-            {/* ORDER + ACTIVE */}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
-                <label className="block font-semibold mb-2">
+                <label className="mb-2 block font-semibold">
                   Display Order
                 </label>
 
@@ -384,70 +326,52 @@ export default function Subcategories() {
                   min="0"
                   value={form.displayOrder}
                   onChange={(event) =>
-                    handleChange(
-                      "displayOrder",
-                      event.target.value
-                    )
+                    handleChange("displayOrder", event.target.value)
                   }
-                  className="w-full border p-4 rounded-xl"
+                  className="w-full rounded-xl border p-4"
                 />
 
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="mt-2 text-sm text-gray-500">
                   Smaller numbers appear first.
                 </p>
               </div>
 
               <div>
-                <label className="block font-semibold mb-2">
+                <label className="mb-2 block font-semibold">
                   Status
                 </label>
 
-                <label className="flex items-center gap-3 border p-4 rounded-xl cursor-pointer">
-
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border p-4">
                   <input
                     type="checkbox"
                     checked={form.isActive}
                     onChange={(event) =>
-                      handleChange(
-                        "isActive",
-                        event.target.checked
-                      )
+                      handleChange("isActive", event.target.checked)
                     }
-                    className="w-5 h-5"
+                    className="h-5 w-5"
                   />
 
-                  <span>
-                    Active
-                  </span>
-
+                  <span>Active</span>
                 </label>
               </div>
-
             </div>
-
-            {/* SUBMIT */}
 
             <button
               type="submit"
               disabled={loading}
-              className="bg-black text-white px-8 py-4 rounded-xl font-bold hover:bg-gray-800 disabled:opacity-50"
+              className="rounded-xl bg-black px-8 py-4 font-bold text-white hover:bg-gray-800 disabled:opacity-50"
             >
               {loading
                 ? "Saving..."
                 : editingId
-                ? "Update Subcategory"
-                : "Add Subcategory"}
+                  ? "Update Subcategory"
+                  : "Add Subcategory"}
             </button>
-
           </form>
         </div>
 
-        {/* LIST */}
-
-        <div className="bg-white rounded-2xl shadow p-5 sm:p-8">
-
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-
+        <div className="rounded-2xl bg-white p-5 shadow sm:p-8">
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <h2 className="text-2xl font-bold">
               All Subcategories
             </h2>
@@ -455,173 +379,124 @@ export default function Subcategories() {
             <select
               value={selectedCategory}
               onChange={(event) =>
-                setSelectedCategory(
-                  event.target.value
-                )
+                setSelectedCategory(event.target.value)
               }
-              className="border p-3 rounded-xl"
+              className="rounded-xl border p-3"
             >
-              <option value="All">
-                All Categories
-              </option>
+              <option value="All">All Categories</option>
 
               {categories.map((category) => (
-                <option
-                  key={category}
-                  value={category}
-                >
+                <option key={category} value={category}>
                   {category}
                 </option>
               ))}
             </select>
-
           </div>
 
           {pageLoading ? (
-
             <div className="py-16 text-center">
               Loading subcategories...
             </div>
-
           ) : filteredSubcategories.length === 0 ? (
-
             <div className="py-16 text-center text-gray-500">
               No subcategories found.
             </div>
-
           ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredSubcategories.map((subcategory) => (
+                <div
+                  key={subcategory._id}
+                  className={`overflow-hidden rounded-2xl border ${
+                    subcategory.isActive
+                      ? "bg-white"
+                      : "bg-gray-100 opacity-70"
+                  }`}
+                >
+                  <img
+                    src={
+                      subcategory.image ||
+                      "https://via.placeholder.com/500x300?text=No+Image"
+                    }
+                    alt={subcategory.name}
+                    className="h-48 w-full object-cover"
+                  />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-              {filteredSubcategories.map(
-                (subcategory) => (
-
-                  <div
-                    key={subcategory._id}
-                    className={`border rounded-2xl overflow-hidden ${
-                      subcategory.isActive
-                        ? "bg-white"
-                        : "bg-gray-100 opacity-70"
-                    }`}
-                  >
-
-                    <img
-                      src={
-                        subcategory.image ||
-                        "https://via.placeholder.com/500x300?text=No+Image"
-                      }
-                      alt={subcategory.name}
-                      className="w-full h-48 object-cover"
-                    />
-
-                    <div className="p-5">
-
-                      <div className="flex items-start justify-between gap-3">
-
-                        <div>
-
-                          <p className="text-sm text-purple-600 font-bold">
-                            {subcategory.category}
-                          </p>
-
-                          <h3 className="text-xl font-bold mt-1">
-                            {subcategory.name}
-                          </h3>
-
-                        </div>
-
-                        <span
-                          className={`text-xs px-3 py-1 rounded-full font-bold ${
-                            subcategory.isActive
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {subcategory.isActive
-                            ? "ACTIVE"
-                            : "HIDDEN"}
-                        </span>
-
-                      </div>
-
-                      <p className="text-gray-500 mt-3">
-                        Products:{" "}
-                        <strong>
-                          {subcategory.productCount ?? 0}
-                        </strong>
-                      </p>
-
-                      <p className="text-gray-500 text-sm mt-1">
-                        Order:{" "}
-                        {subcategory.displayOrder ?? 0}
-                      </p>
-
-                      {subcategory.description && (
-                        <p className="text-gray-600 text-sm mt-3 line-clamp-3">
-                          {subcategory.description}
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-bold text-purple-600">
+                          {subcategory.category}
                         </p>
-                      )}
 
-                      {/* BUTTONS */}
-
-                      <div className="grid grid-cols-2 gap-3 mt-5">
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            startEdit(subcategory)
-                          }
-                          className="bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            toggleSubcategory(
-                              subcategory
-                            )
-                          }
-                          className={`py-3 rounded-xl font-semibold ${
-                            subcategory.isActive
-                              ? "bg-red-100 text-red-700 hover:bg-red-200"
-                              : "bg-green-100 text-green-700 hover:bg-green-200"
-                          }`}
-                        >
-                          {subcategory.isActive
-                            ? "Hide"
-                            : "Restore"}
-                        </button>
-
+                        <h3 className="mt-1 text-xl font-bold">
+                          {subcategory.name}
+                        </h3>
                       </div>
 
-                      {/* NO PRODUCTS */}
-
-                      {subcategory.isActive &&
-                        (subcategory.productCount ?? 0) ===
-                          0 && (
-                          <div className="mt-4 bg-yellow-50 text-yellow-700 rounded-xl p-3 text-sm">
-                            No products use this
-                            subcategory yet. It
-                            will not appear on
-                            the frontend.
-                          </div>
-                        )}
-
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-bold ${
+                          subcategory.isActive
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {subcategory.isActive ? "ACTIVE" : "HIDDEN"}
+                      </span>
                     </div>
 
+                    <p className="mt-3 text-gray-500">
+                      Products:{" "}
+                      <strong>
+                        {subcategory.productCount ?? 0}
+                      </strong>
+                    </p>
+
+                    <p className="mt-1 text-sm text-gray-500">
+                      Order: {subcategory.displayOrder ?? 0}
+                    </p>
+
+                    {subcategory.description && (
+                      <p className="mt-3 line-clamp-3 text-sm text-gray-600">
+                        {subcategory.description}
+                      </p>
+                    )}
+
+                    <div className="mt-5 grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(subcategory)}
+                        className="rounded-xl bg-black py-3 font-semibold text-white hover:bg-gray-800"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => toggleSubcategory(subcategory)}
+                        className={`rounded-xl py-3 font-semibold ${
+                          subcategory.isActive
+                            ? "bg-red-100 text-red-700 hover:bg-red-200"
+                            : "bg-green-100 text-green-700 hover:bg-green-200"
+                        }`}
+                      >
+                        {subcategory.isActive ? "Hide" : "Restore"}
+                      </button>
+                    </div>
+
+                    {subcategory.isActive &&
+                      (subcategory.productCount ?? 0) === 0 && (
+                        <div className="mt-4 rounded-xl bg-yellow-50 p-3 text-sm text-yellow-700">
+                          No products use this subcategory yet. It
+                          may not appear on the frontend until
+                          products are assigned to it.
+                        </div>
+                      )}
                   </div>
-
-                )
-              )}
-
+                </div>
+              ))}
             </div>
-
           )}
-
         </div>
-
       </div>
     </Layout>
   );

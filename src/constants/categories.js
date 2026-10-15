@@ -6,10 +6,7 @@ export const categories = [
   "Mens-Cosmetics",
   "Womens-Cosmetics",
   "Kids-Cosmetics",
-<<<<<<< HEAD
   "New Born",
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 ];
 
 export const subCategories = {
@@ -28,6 +25,7 @@ export const subCategories = {
     "Umbrellas",
     "Raincoats",
   ],
+
   Women: [
     "T-Shirts",
     "Lowers",
@@ -52,6 +50,7 @@ export const subCategories = {
     "Umbrellas",
     "Raincoats",
   ],
+
   Kids: [
     "T-Shirts",
     "Lowers",
@@ -68,6 +67,7 @@ export const subCategories = {
     "Umbrellas",
     "Raincoats",
   ],
+
   Jewellery: [
     "Earrings",
     "Necklaces",
@@ -78,6 +78,7 @@ export const subCategories = {
     "Anklets",
     "Hair Accessories",
   ],
+
   "Mens-Cosmetics": [
     "Deodorants",
     "Perfumes",
@@ -92,6 +93,7 @@ export const subCategories = {
     "Hair Color",
     "Toiletries",
   ],
+
   "Womens-Cosmetics": [
     "Deodorants",
     "Perfumes",
@@ -110,15 +112,14 @@ export const subCategories = {
     "Color Bar Products",
     "Toiletries",
   ],
+
   "Kids-Cosmetics": [
     "Baby Face Creams",
     "Baby Shampoos",
     "Baby Soaps",
     "Toiletries",
   ],
-<<<<<<< HEAD
-  // Sub categories for New Born are added from the Subcategories page
+
+  // Subcategories for New Born are managed through the Subcategories page.
   "New Born": [],
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 };

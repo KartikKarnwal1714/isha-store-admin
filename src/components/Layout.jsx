@@ -1,24 +1,17 @@
+
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
-
 import Navbar from "./Navbar";
 
-
-export default function Layout({
-  children,
-}) {
-
+export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-
     <div className="min-h-screen flex bg-gray-100">
-
       {/* MOBILE SIDEBAR OVERLAY */}
-
       {sidebarOpen && (
         <div
           onClick={closeSidebar}
@@ -27,26 +20,14 @@ export default function Layout({
       )}
 
       {/* SIDEBAR */}
-
       <div
-<<<<<<< HEAD
-        className={`fixed md:sticky md:top-0 md:h-screen md:self-start inset-y-0 left-0 z-50 w-72 max-w-[80vw] bg-black text-white p-6 overflow-y-auto transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
-  sidebarOpen ? "translate-x-0" : "-translate-x-full"
-}`}
-
-=======
-        className={`fixed md:static inset-y-0 left-0 z-50 w-72 max-w-[80vw] bg-black text-white p-6 overflow-y-auto transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed md:sticky md:top-0 md:h-screen md:self-start inset-y-0 left-0 z-50 w-72 max-w-[80vw] bg-black text-white p-6 overflow-y-auto transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
+        } md:translate-x-0`}
       >
-
         <div className="flex items-center justify-between mb-12">
-
           <h1 className="text-3xl sm:text-4xl font-bold">
-
             ADMIN
-
           </h1>
 
           <button
@@ -57,114 +38,93 @@ export default function Layout({
           >
             <FaTimes />
           </button>
-
         </div>
 
         <div
           className="flex flex-col gap-4"
           onClick={closeSidebar}
         >
-
           <Link
             to="/"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
           >
-
             Dashboard
-
           </Link>
 
           <Link
             to="/products"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
           >
-
             Products
-
           </Link>
 
           <Link
             to="/add-product"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
           >
-
             Add Product
-
           </Link>
 
-          <Link 
+          <Link
             to="/upload-products"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
-            >
-
-              Upload Products 
-
+          >
+            Upload Products
           </Link>
 
           <Link
             to="/add-brand"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
           >
-
             Add Brand
-
           </Link>
 
           <Link
-  to="/subcategories"
-  className="hover:bg-gray-800 p-4 rounded-xl transition"
->
-  Subcategories
-</Link>
+            to="/subcategories"
+            className="hover:bg-gray-800 p-4 rounded-xl transition"
+          >
+            Subcategories
+          </Link>
 
           <Link
             to="/orders"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
           >
-
             Orders
-
           </Link>
 
-          <Link 
+          <Link
             to="/add-coupon"
             className="hover:bg-gray-800 p-4 rounded-xl transition"
           >
-
             Add Coupon
           </Link>
 
           <Link
-  to="/customers"
-  className="block px-5 py-4 rounded-xl hover:bg-gray-800 transition"
->
-  Customers
-</Link>
+            to="/customers"
+            className="block px-5 py-4 rounded-xl hover:bg-gray-800 transition"
+          >
+            Customers
+          </Link>
 
           <button
-  onClick={() => {
-    localStorage.removeItem("adminToken");
-    window.location.href = "/login";
-  }}
-  className="bg-red-500 text-white px-4 py-3 rounded-xl"
->
-  Logout
-</button>
-
+            type="button"
+            onClick={() => {
+              localStorage.removeItem("adminToken");
+              window.location.href = "/login";
+            }}
+            className="bg-red-500 text-white px-4 py-3 rounded-xl hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
         </div>
-
       </div>
 
-      {/* MAIN */}
-
+      {/* MAIN CONTENT */}
       <div className="flex-1 p-3 sm:p-6 w-full min-w-0">
-
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
-
         {children}
-
       </div>
-
     </div>
   );
 }

@@ -3,10 +3,7 @@ import adminApi from "../api/client";
 import Layout from "../components/Layout";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { categories } from "../constants/categories";
-<<<<<<< HEAD
 import ColorStockBadge from "../components/ColorStockBadge";
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
 const cosmeticCategories = [
   "Mens-Cosmetics",
@@ -29,9 +26,28 @@ const kidsAgeOptions = [
   "12-14 Years",
 ];
 
+function createColor() {
+  return {
+    colorName: "",
+    colorCode: "#000000",
+    lowStockThreshold: 5,
+    images: [],
+    imageUrls: [""],
+    sizes: [
+      {
+        size: "",
+        stock: "",
+        price: "",
+        originalPrice: "",
+      },
+    ],
+  };
+}
+
 export default function AddProduct() {
   const [loading, setLoading] = useState(false);
-  const [availableSubcategories, setAvailableSubcategories] = useState([]);
+  const [availableSubcategories, setAvailableSubcategories] =
+    useState([]);
 
   const [product, setProduct] = useState({
     name: "",
@@ -42,26 +58,7 @@ export default function AddProduct() {
     originalPrice: "",
     description: "",
     featured: false,
-    colors: [
-      {
-        colorName: "",
-        colorCode: "#000000",
-<<<<<<< HEAD
-        lowStockThreshold: 5,
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-        images: [],
-        imageUrls: [""],
-        sizes: [
-          {
-            size: "",
-            stock: "",
-            price: "",
-            originalPrice: "",
-          },
-        ],
-      },
-    ],
+    colors: [createColor()],
   });
 
   const fetchSubcategories = async (category) => {
@@ -72,20 +69,14 @@ export default function AddProduct() {
       }
 
       const response = await adminApi.get("/subcategories", {
-        params: {
-          category,
-        },
+        params: { category },
       });
 
       setAvailableSubcategories(
         response.data.subcategories || []
       );
     } catch (error) {
-      console.error(
-        "Failed to load subcategories:",
-        error
-      );
-
+      console.error("Failed to load subcategories:", error);
       setAvailableSubcategories([]);
     }
   };
@@ -94,104 +85,76 @@ export default function AddProduct() {
     fetchSubcategories(product.category);
   }, [product.category]);
 
-  const isCosmetic = cosmeticCategories.includes(product.category);
+  const isCosmetic = cosmeticCategories.includes(
+    product.category
+  );
   const isKids = product.category === "Kids";
   const isJewellery = product.category === "Jewellery";
+  const isNewBorn = product.category === "New Born";
 
   const handleCategoryChange = (value) => {
-    setProduct({
-      ...product,
+    setProduct((previous) => ({
+      ...previous,
       category: value,
       subCategory: "",
       price: "",
       originalPrice: "",
-      colors: [
-        {
-          colorName: "",
-          colorCode: "#000000",
-<<<<<<< HEAD
-          lowStockThreshold: 5,
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-          images: [],
-          imageUrls: [""],
-          sizes: [
-            {
-              size: "",
-              stock: "",
-              price: "",
-              originalPrice: "",
-            },
-          ],
-        },
-      ],
-    });
+      colors: [createColor()],
+    }));
   };
 
   const addColor = () => {
-    setProduct({
-      ...product,
-      colors: [
-        ...product.colors,
-        {
-          colorName: "",
-          colorCode: "#000000",
-<<<<<<< HEAD
-          lowStockThreshold: 5,
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-          images: [],
-          imageUrls: [""],
-          sizes: [
-            {
-              size: "",
-              stock: "",
-              price: "",
-              originalPrice: "",
-            },
-          ],
-        },
-      ],
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: [...previous.colors, createColor()],
+    }));
   };
 
   const deleteColor = (colorIndex) => {
-    const updatedColors = [...product.colors];
-    updatedColors.splice(colorIndex, 1);
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.filter(
+        (_, index) => index !== colorIndex
+      ),
+    }));
   };
 
   const addSize = (colorIndex) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex].sizes.push({
-      size: "",
-      stock: "",
-      price: "",
-      originalPrice: "",
-    });
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? {
+              ...color,
+              sizes: [
+                ...color.sizes,
+                {
+                  size: "",
+                  stock: "",
+                  price: "",
+                  originalPrice: "",
+                },
+              ],
+            }
+          : color
+      ),
+    }));
   };
 
   const deleteSize = (colorIndex, sizeIndex) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex].sizes.splice(
-      sizeIndex,
-      1
-    );
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? {
+              ...color,
+              sizes: color.sizes.filter(
+                (_, i) => i !== sizeIndex
+              ),
+            }
+          : color
+      ),
+    }));
   };
 
   const handleColorChange = (
@@ -199,14 +162,14 @@ export default function AddProduct() {
     field,
     value
   ) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex][field] = value;
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? { ...color, [field]: value }
+          : color
+      ),
+    }));
   };
 
   const handleSizeChange = (
@@ -215,41 +178,46 @@ export default function AddProduct() {
     field,
     value
   ) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex].sizes[sizeIndex][field] =
-      value;
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? {
+              ...color,
+              sizes: color.sizes.map((size, i) =>
+                i === sizeIndex
+                  ? { ...size, [field]: value }
+                  : size
+              ),
+            }
+          : color
+      ),
+    }));
   };
 
-  const handleImageUpload = (
-    colorIndex,
-    files
-  ) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex].images =
-      Array.from(files);
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+  const handleImageUpload = (colorIndex, files) => {
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? { ...color, images: Array.from(files) }
+          : color
+      ),
+    }));
   };
 
   const addImageUrl = (colorIndex) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex].imageUrls.push("");
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? {
+              ...color,
+              imageUrls: [...color.imageUrls, ""],
+            }
+          : color
+      ),
+    }));
   };
 
   const handleImageUrlChange = (
@@ -257,43 +225,44 @@ export default function AddProduct() {
     urlIndex,
     value
   ) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex].imageUrls[urlIndex] =
-      value;
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? {
+              ...color,
+              imageUrls: color.imageUrls.map((url, i) =>
+                i === urlIndex ? value : url
+              ),
+            }
+          : color
+      ),
+    }));
   };
 
-  const deleteImageUrl = (
-    colorIndex,
-    urlIndex
-  ) => {
-    const updatedColors = [...product.colors];
-
-    updatedColors[colorIndex].imageUrls.splice(
-      urlIndex,
-      1
-    );
-
-    setProduct({
-      ...product,
-      colors: updatedColors,
-    });
+  const deleteImageUrl = (colorIndex, urlIndex) => {
+    setProduct((previous) => ({
+      ...previous,
+      colors: previous.colors.map((color, index) =>
+        index === colorIndex
+          ? {
+              ...color,
+              imageUrls: color.imageUrls.filter(
+                (_, i) => i !== urlIndex
+              ),
+            }
+          : color
+      ),
+    }));
   };
 
   const totalStock = product.colors.reduce(
-    (total, color) => {
-      return (
-        total +
-        color.sizes.reduce((sum, size) => {
-          return sum + Number(size.stock || 0);
-        }, 0)
-      );
-    },
+    (total, color) =>
+      total +
+      color.sizes.reduce(
+        (sum, size) => sum + Number(size.stock || 0),
+        0
+      ),
     0
   );
 
@@ -301,14 +270,17 @@ export default function AddProduct() {
     e.preventDefault();
 
     const hasMissingPrice = product.colors.some((color) =>
-      color.sizes.some((size) =>
-        Number(size.price || 0) <= 0 &&
-        Number(size.originalPrice || 0) <= 0
+      color.sizes.some(
+        (size) =>
+          Number(size.price || 0) <= 0 &&
+          Number(size.originalPrice || 0) <= 0
       )
     );
 
     if (hasMissingPrice) {
-      alert("Enter either Selling Price or Original Price for every size. You can enter both too.");
+      alert(
+        "Enter either Selling Price or Original Price for every size. You can enter both too."
+      );
       return;
     }
 
@@ -320,29 +292,20 @@ export default function AddProduct() {
       formData.append("name", product.name);
       formData.append("brand", product.brand);
       formData.append("category", product.category);
-      formData.append(
-        "subCategory",
-        product.subCategory
-      );
-      formData.append(
-        "description",
-        product.description
-      );
-      formData.append(
-        "featured",
-        product.featured
-      );
-      formData.append(
-        "totalStock",
-        totalStock
-      );
+      formData.append("subCategory", product.subCategory);
+      formData.append("description", product.description);
+      formData.append("featured", product.featured);
+      formData.append("totalStock", totalStock);
 
-      const firstSize =
-        product.colors?.[0]?.sizes?.[0];
+      const firstSize = product.colors?.[0]?.sizes?.[0];
 
       formData.append(
         "price",
-        Number(firstSize?.price || firstSize?.originalPrice || 0)
+        Number(
+          firstSize?.price ||
+            firstSize?.originalPrice ||
+            0
+        )
       );
 
       formData.append(
@@ -350,29 +313,22 @@ export default function AddProduct() {
         Number(firstSize?.originalPrice || 0)
       );
 
-      const colorsWithoutFiles =
-        product.colors.map((color) => ({
+      const colorsWithoutFiles = product.colors.map(
+        (color) => ({
           colorName: color.colorName,
           colorCode: color.colorCode,
-<<<<<<< HEAD
           lowStockThreshold: Number(
             color.lowStockThreshold === "" ||
               color.lowStockThreshold === undefined
               ? 5
               : color.lowStockThreshold
           ),
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
           imageCount: color.images.length,
-
           imageUrls: color.imageUrls.filter(
             (url) => url && url.length > 0
           ),
-
           sizes: color.sizes.map((size) => ({
-            size: isJewellery
-              ? "Default"
-              : size.size,
+            size: isJewellery ? "Default" : size.size,
             stock: Number(size.stock || 0),
             price: Number(
               size.price || size.originalPrice || 0
@@ -381,9 +337,9 @@ export default function AddProduct() {
               size.originalPrice || 0
             ),
           })),
-
           images: [],
-        }));
+        })
+      );
 
       formData.append(
         "colors",
@@ -396,16 +352,11 @@ export default function AddProduct() {
         });
       });
 
-      await adminApi.post(
-        "/products",
-        formData,
-        {
-          headers: {
-            "Content-Type":
-              "multipart/form-data",
-          },
-        }
-      );
+      await adminApi.post("/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       alert("Product Added Successfully");
 
@@ -418,29 +369,10 @@ export default function AddProduct() {
         originalPrice: "",
         description: "",
         featured: false,
-        colors: [
-          {
-            colorName: "",
-            colorCode: "#000000",
-<<<<<<< HEAD
-            lowStockThreshold: 5,
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-            images: [],
-            imageUrls: [""],
-            sizes: [
-              {
-                size: "",
-                stock: "",
-                price: "",
-                originalPrice: "",
-              },
-            ],
-          },
-        ],
+        colors: [createColor()],
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
 
       alert(
         error.response?.data?.message ||
@@ -458,10 +390,7 @@ export default function AddProduct() {
           Add Product
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-8"
-        >
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div className="bg-white p-6 rounded-2xl shadow">
             <h2 className="text-2xl font-bold mb-6">
               Product Info
@@ -499,16 +428,11 @@ export default function AddProduct() {
                 className="border p-4 rounded-xl"
                 value={product.category}
                 onChange={(e) =>
-                  handleCategoryChange(
-                    e.target.value
-                  )
+                  handleCategoryChange(e.target.value)
                 }
               >
                 {categories.map((cat) => (
-                  <option
-                    key={cat}
-                    value={cat}
-                  >
+                  <option key={cat} value={cat}>
                     {cat}
                   </option>
                 ))}
@@ -520,26 +444,21 @@ export default function AddProduct() {
                 onChange={(e) =>
                   setProduct({
                     ...product,
-                    subCategory:
-                      e.target.value,
+                    subCategory: e.target.value,
                   })
                 }
                 required
               >
-                <option value="">
-                  Select Sub Category
-                </option>
+                <option value="">Select Sub Category</option>
 
-                {availableSubcategories.map(
-                  (subcategory) => (
-                    <option
-                      key={subcategory._id}
-                      value={subcategory.name}
-                    >
-                      {subcategory.name}
-                    </option>
-                  )
-                )}
+                {availableSubcategories.map((subcategory) => (
+                  <option
+                    key={subcategory._id}
+                    value={subcategory.name}
+                  >
+                    {subcategory.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -551,398 +470,341 @@ export default function AddProduct() {
               onChange={(e) =>
                 setProduct({
                   ...product,
-                  description:
-                    e.target.value,
+                  description: e.target.value,
                 })
               }
             />
           </div>
 
-          {product.colors.map(
-            (color, colorIndex) => (
-              <div
-                key={colorIndex}
-                className="bg-white p-6 rounded-2xl shadow"
-              >
-                <div className="flex justify-between items-center mb-5">
-<<<<<<< HEAD
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="text-2xl font-bold">
-                      Color Variant{" "}
-                      {colorIndex + 1}
-                    </h2>
-
-                    <ColorStockBadge color={color} />
-                  </div>
-=======
+          {product.colors.map((color, colorIndex) => (
+            <div
+              key={colorIndex}
+              className="bg-white p-6 rounded-2xl shadow"
+            >
+              <div className="flex justify-between items-center mb-5">
+                <div className="flex flex-wrap items-center gap-3">
                   <h2 className="text-2xl font-bold">
-                    Color Variant{" "}
-                    {colorIndex + 1}
+                    Color Variant {colorIndex + 1}
                   </h2>
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
-                  {product.colors.length >
-                    1 && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        deleteColor(
-                          colorIndex
-                        )
-                      }
-                      className="bg-red-500 text-white p-3 rounded-xl"
-                    >
-                      <FaTrash />
-                    </button>
-                  )}
+                  <ColorStockBadge color={color} />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                {product.colors.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => deleteColor(colorIndex)}
+                    className="bg-red-500 text-white p-3 rounded-xl"
+                  >
+                    <FaTrash />
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <input
+                  type="text"
+                  placeholder="Color Name"
+                  className="border p-4 rounded-xl"
+                  value={color.colorName}
+                  onChange={(e) =>
+                    handleColorChange(
+                      colorIndex,
+                      "colorName",
+                      e.target.value
+                    )
+                  }
+                />
+
+                <input
+                  type="color"
+                  className="h-14 w-full rounded-xl"
+                  value={color.colorCode}
+                  onChange={(e) =>
+                    handleColorChange(
+                      colorIndex,
+                      "colorCode",
+                      e.target.value
+                    )
+                  }
+                />
+              </div>
+
+              <div className="mb-5">
+                <label className="font-semibold block mb-2">
+                  Low-stock alert for this colour
+                </label>
+
+                <div className="flex items-center gap-3 flex-wrap">
                   <input
-                    type="text"
-                    placeholder="Color Name"
-                    className="border p-4 rounded-xl"
-                    value={color.colorName}
+                    type="number"
+                    min="0"
+                    placeholder="5"
+                    className="border p-4 rounded-xl w-40"
+                    value={color.lowStockThreshold}
                     onChange={(e) =>
                       handleColorChange(
                         colorIndex,
-                        "colorName",
+                        "lowStockThreshold",
                         e.target.value
                       )
                     }
                   />
 
-                  <input
-                    type="color"
-                    className="h-14 w-full rounded-xl"
-                    value={color.colorCode}
-                    onChange={(e) =>
-                      handleColorChange(
-                        colorIndex,
-                        "colorCode",
-                        e.target.value
-                      )
-                    }
-                  />
+                  <p className="text-sm text-gray-500">
+                    Colour shows as Low Stock when its total
+                    stock across all sizes is this number or
+                    less.
+                  </p>
                 </div>
+              </div>
 
-                <div className="mb-5">
-<<<<<<< HEAD
-                  <label className="font-semibold block mb-2">
-                    Low-stock alert for this colour
-                  </label>
+              <div className="mb-5">
+                <p className="font-semibold mb-2">
+                  Choose Image File
+                </p>
 
-                  <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleImageUpload(
+                      colorIndex,
+                      e.target.files
+                    )
+                  }
+                />
+              </div>
+
+              <div className="space-y-3 mb-5">
+                <p className="font-semibold">
+                  Or Enter Image URL / Base64
+                </p>
+
+                {color.imageUrls.map((url, urlIndex) => (
+                  <div
+                    key={urlIndex}
+                    className="flex gap-3"
+                  >
                     <input
-                      type="number"
-                      min="0"
-                      placeholder="5"
-                      className="border p-4 rounded-xl w-40"
-                      value={color.lowStockThreshold}
+                      type="text"
+                      placeholder="Enter Image URL, Base64, Cloudinary, Google Drive URL"
+                      className="border p-4 rounded-xl w-full"
+                      value={url}
                       onChange={(e) =>
-                        handleColorChange(
+                        handleImageUrlChange(
                           colorIndex,
-                          "lowStockThreshold",
+                          urlIndex,
                           e.target.value
                         )
                       }
                     />
 
-                    <p className="text-sm text-gray-500">
-                      Colour shows as Low Stock when its total
-                      stock (all sizes) is this number or less.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mb-5">
-=======
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-                  <p className="font-semibold mb-2">
-                    Choose Image File
-                  </p>
-
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleImageUpload(
-                        colorIndex,
-                        e.target.files
-                      )
-                    }
-                  />
-                </div>
-
-                <div className="space-y-3 mb-5">
-                  <p className="font-semibold">
-                    Or Enter Image URL / Base64
-                  </p>
-
-                  {color.imageUrls.map(
-                    (url, urlIndex) => (
-                      <div
-                        key={urlIndex}
-                        className="flex gap-3"
+                    {color.imageUrls.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          deleteImageUrl(
+                            colorIndex,
+                            urlIndex
+                          )
+                        }
+                        className="bg-red-500 text-white px-4 rounded-xl"
                       >
-                        <input
-                          type="text"
-                          placeholder="Enter Image URL, Base64, Cloudinary, Google Drive URL"
-                          className="border p-4 rounded-xl w-full"
-                          value={url}
-                          onChange={(e) =>
-                            handleImageUrlChange(
-                              colorIndex,
-                              urlIndex,
-                              e.target.value
-                            )
-                          }
-                        />
-
-                        {color.imageUrls
-                          .length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              deleteImageUrl(
-                                colorIndex,
-                                urlIndex
-                              )
-                            }
-                            className="bg-red-500 text-white px-4 rounded-xl"
-                          >
-                            Delete
-                          </button>
-                        )}
-                      </div>
-                    )
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addImageUrl(
-                        colorIndex
-                      )
-                    }
-                    className="bg-blue-500 text-white px-5 py-3 rounded-xl"
-                  >
-                    Add Image URL
-                  </button>
-                </div>
-
-                <div className="flex gap-3 flex-wrap mb-6">
-                  {color.images.map(
-                    (image, index) => (
-                      <img
-                        key={`file-${index}`}
-                        src={URL.createObjectURL(
-                          image
-                        )}
-                        alt=""
-                        className="w-24 h-24 object-cover rounded-xl"
-                      />
-                    )
-                  )}
-
-                  {color.imageUrls
-                    .filter(
-                      (url) =>
-                        url &&
-                        url.length > 0
-                    )
-                    .map(
-                      (url, index) => (
-                        <img
-                          key={`url-${index}`}
-                          src={url}
-                          alt=""
-                          className="w-24 h-24 object-cover rounded-xl"
-                          onError={(e) => {
-                            e.currentTarget.style.display =
-                              "none";
-                          }}
-                        />
-                      )
+                        Delete
+                      </button>
                     )}
-                </div>
+                  </div>
+                ))}
 
-                {color.sizes.map(
-                  (size, sizeIndex) => (
-                    <div
-                      key={sizeIndex}
-                      className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4"
+                <button
+                  type="button"
+                  onClick={() => addImageUrl(colorIndex)}
+                  className="bg-blue-500 text-white px-5 py-3 rounded-xl"
+                >
+                  Add Image URL
+                </button>
+              </div>
+
+              <div className="flex gap-3 flex-wrap mb-6">
+                {color.images.map((image, index) => (
+                  <img
+                    key={`file-${index}`}
+                    src={URL.createObjectURL(image)}
+                    alt=""
+                    className="w-24 h-24 object-cover rounded-xl"
+                  />
+                ))}
+
+                {color.imageUrls
+                  .filter((url) => url && url.length > 0)
+                  .map((url, index) => (
+                    <img
+                      key={`url-${index}`}
+                      src={url}
+                      alt=""
+                      className="w-24 h-24 object-cover rounded-xl"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ))}
+              </div>
+
+              {color.sizes.map((size, sizeIndex) => (
+                <div
+                  key={sizeIndex}
+                  className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4"
+                >
+                  {isCosmetic ? (
+                    <input
+                      type="text"
+                      placeholder="Amount / Weight, like 50gm, 100ml"
+                      className="border p-4 rounded-xl"
+                      value={size.size}
+                      onChange={(e) =>
+                        handleSizeChange(
+                          colorIndex,
+                          sizeIndex,
+                          "size",
+                          e.target.value
+                        )
+                      }
+                      required
+                    />
+                  ) : isKids ? (
+                    <select
+                      className="border p-4 rounded-xl"
+                      value={size.size}
+                      onChange={(e) =>
+                        handleSizeChange(
+                          colorIndex,
+                          sizeIndex,
+                          "size",
+                          e.target.value
+                        )
+                      }
+                      required
                     >
-                      {isCosmetic ? (
-                        <input
-                          type="text"
-                          placeholder="Amount / Weight, like 50gm, 100ml"
-                          className="border p-4 rounded-xl"
-                          value={size.size}
-                          onChange={(e) =>
-                            handleSizeChange(
-                              colorIndex,
-                              sizeIndex,
-                              "size",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      ) : isKids ? (
-                        <select
-                          className="border p-4 rounded-xl"
-                          value={size.size}
-                          onChange={(e) =>
-                            handleSizeChange(
-                              colorIndex,
-                              sizeIndex,
-                              "size",
-                              e.target.value
-                            )
-                          }
-                          required
-                        >
-                          <option value="">
-                            Select Age
-                          </option>
+                      <option value="">Select Age</option>
 
-                          {kidsAgeOptions.map(
-                            (age) => (
-                              <option
-                                key={age}
-                                value={age}
-                              >
-                                {age}
-                              </option>
-                            )
-                          )}
-                        </select>
-                      ) : isJewellery ? (
-                        <input
-                          type="text"
-                          className="border p-4 rounded-xl bg-gray-100"
-                          value="Default"
-                          readOnly
-                        />
-                      ) : (
-                        <input
-                          type="text"
-<<<<<<< HEAD
-                          placeholder={
-                        product.category === "New Born"
+                      {kidsAgeOptions.map((age) => (
+                        <option key={age} value={age}>
+                          {age}
+                        </option>
+                      ))}
+                    </select>
+                  ) : isJewellery ? (
+                    <input
+                      type="text"
+                      className="border p-4 rounded-xl bg-gray-100"
+                      value="Default"
+                      readOnly
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder={
+                        isNewBorn
                           ? "Size, like 0-3 Months, 3-6 Months"
                           : "Size, like S, M, L, XL"
                       }
-=======
-                          placeholder="Size, like S, M, L, XL"
->>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
-                          className="border p-4 rounded-xl"
-                          value={size.size}
-                          onChange={(e) =>
-                            handleSizeChange(
-                              colorIndex,
-                              sizeIndex,
-                              "size",
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                      )}
+                      className="border p-4 rounded-xl"
+                      value={size.size}
+                      onChange={(e) =>
+                        handleSizeChange(
+                          colorIndex,
+                          sizeIndex,
+                          "size",
+                          e.target.value
+                        )
+                      }
+                      required
+                    />
+                  )}
 
-                      <input
-                        type="number"
-                        placeholder="Selling Price (optional)"
-                        aria-label="Selling Price"
-                        min="0"
-                        step="0.01"
-                        className="border p-4 rounded-xl"
-                        value={size.price}
-                        onChange={(e) =>
-                          handleSizeChange(
-                            colorIndex,
-                            sizeIndex,
-                            "price",
-                            e.target.value
-                          )
-                        }
-                      />
-
-                      <input
-                        type="number"
-                        placeholder="Original Price (optional)"
-                        className="border p-4 rounded-xl"
-                        min="0"
-                        step="0.01"
-                        value={
-                          size.originalPrice ||
-                          ""
-                        }
-                        onChange={(e) =>
-                          handleSizeChange(
-                            colorIndex,
-                            sizeIndex,
-                            "originalPrice",
-                            e.target.value
-                          )
-                        }
-                      />
-
-                      <input
-                        type="number"
-                        placeholder="Stock"
-                        className="border p-4 rounded-xl"
-                        value={size.stock}
-                        onChange={(e) =>
-                          handleSizeChange(
-                            colorIndex,
-                            sizeIndex,
-                            "stock",
-                            e.target.value
-                          )
-                        }
-                        required
-                      />
-
-                      {color.sizes.length >
-                        1 && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            deleteSize(
-                              colorIndex,
-                              sizeIndex
-                            )
-                          }
-                          className="bg-red-500 text-white rounded-xl py-3"
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </div>
-                  )
-                )}
-
-                {!isJewellery && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addSize(colorIndex)
+                  <input
+                    type="number"
+                    placeholder="Selling Price (optional)"
+                    aria-label="Selling Price"
+                    min="0"
+                    step="0.01"
+                    className="border p-4 rounded-xl"
+                    value={size.price}
+                    onChange={(e) =>
+                      handleSizeChange(
+                        colorIndex,
+                        sizeIndex,
+                        "price",
+                        e.target.value
+                      )
                     }
-                    className="bg-blue-500 text-white px-5 py-3 rounded-xl"
-                  >
-                    {isCosmetic
-                      ? "Add Amount Variant"
-                      : isKids
-                      ? "Add Age Variant"
-                      : "Add Size"}
-                  </button>
-                )}
-              </div>
-            )
-          )}
+                  />
+
+                  <input
+                    type="number"
+                    placeholder="Original Price (optional)"
+                    className="border p-4 rounded-xl"
+                    min="0"
+                    step="0.01"
+                    value={size.originalPrice || ""}
+                    onChange={(e) =>
+                      handleSizeChange(
+                        colorIndex,
+                        sizeIndex,
+                        "originalPrice",
+                        e.target.value
+                      )
+                    }
+                  />
+
+                  <input
+                    type="number"
+                    placeholder="Stock"
+                    min="0"
+                    className="border p-4 rounded-xl"
+                    value={size.stock}
+                    onChange={(e) =>
+                      handleSizeChange(
+                        colorIndex,
+                        sizeIndex,
+                        "stock",
+                        e.target.value
+                      )
+                    }
+                    required
+                  />
+
+                  {color.sizes.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        deleteSize(colorIndex, sizeIndex)
+                      }
+                      className="bg-red-500 text-white rounded-xl py-3"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              {!isJewellery && (
+                <button
+                  type="button"
+                  onClick={() => addSize(colorIndex)}
+                  className="bg-blue-500 text-white px-5 py-3 rounded-xl"
+                >
+                  {isCosmetic
+                    ? "Add Amount Variant"
+                    : isKids
+                    ? "Add Age Variant"
+                    : "Add Size"}
+                </button>
+              )}
+            </div>
+          ))}
 
           <button
             type="button"
@@ -960,11 +822,9 @@ export default function AddProduct() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-600 text-white px-10 py-5 rounded-2xl text-xl font-bold"
+            className="bg-green-600 text-white px-10 py-5 rounded-2xl text-xl font-bold disabled:opacity-60"
           >
-            {loading
-              ? "Uploading..."
-              : "Create Product"}
+            {loading ? "Uploading..." : "Create Product"}
           </button>
         </form>
       </div>
