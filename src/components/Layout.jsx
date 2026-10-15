@@ -29,10 +29,16 @@ export default function Layout({
       {/* SIDEBAR */}
 
       <div
+<<<<<<< HEAD
         className={`fixed md:sticky md:top-0 md:h-screen md:self-start inset-y-0 left-0 z-50 w-72 max-w-[80vw] bg-black text-white p-6 overflow-y-auto transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
   sidebarOpen ? "translate-x-0" : "-translate-x-full"
 }`}
 
+=======
+        className={`fixed md:static inset-y-0 left-0 z-50 w-72 max-w-[80vw] bg-black text-white p-6 overflow-y-auto transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
       >
 
         <div className="flex items-center justify-between mb-12">

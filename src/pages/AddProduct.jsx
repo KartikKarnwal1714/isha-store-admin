@@ -3,7 +3,10 @@ import adminApi from "../api/client";
 import Layout from "../components/Layout";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { categories } from "../constants/categories";
+<<<<<<< HEAD
 import ColorStockBadge from "../components/ColorStockBadge";
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
 const cosmeticCategories = [
   "Mens-Cosmetics",
@@ -43,7 +46,10 @@ export default function AddProduct() {
       {
         colorName: "",
         colorCode: "#000000",
+<<<<<<< HEAD
         lowStockThreshold: 5,
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
         images: [],
         imageUrls: [""],
         sizes: [
@@ -103,7 +109,10 @@ export default function AddProduct() {
         {
           colorName: "",
           colorCode: "#000000",
+<<<<<<< HEAD
           lowStockThreshold: 5,
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
           images: [],
           imageUrls: [""],
           sizes: [
@@ -127,7 +136,10 @@ export default function AddProduct() {
         {
           colorName: "",
           colorCode: "#000000",
+<<<<<<< HEAD
           lowStockThreshold: 5,
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
           images: [],
           imageUrls: [""],
           sizes: [
@@ -342,12 +354,15 @@ export default function AddProduct() {
         product.colors.map((color) => ({
           colorName: color.colorName,
           colorCode: color.colorCode,
+<<<<<<< HEAD
           lowStockThreshold: Number(
             color.lowStockThreshold === "" ||
               color.lowStockThreshold === undefined
               ? 5
               : color.lowStockThreshold
           ),
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
           imageCount: color.images.length,
 
           imageUrls: color.imageUrls.filter(
@@ -407,7 +422,10 @@ export default function AddProduct() {
           {
             colorName: "",
             colorCode: "#000000",
+<<<<<<< HEAD
             lowStockThreshold: 5,
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
             images: [],
             imageUrls: [""],
             sizes: [
@@ -547,6 +565,7 @@ export default function AddProduct() {
                 className="bg-white p-6 rounded-2xl shadow"
               >
                 <div className="flex justify-between items-center mb-5">
+<<<<<<< HEAD
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-2xl font-bold">
                       Color Variant{" "}
@@ -555,6 +574,12 @@ export default function AddProduct() {
 
                     <ColorStockBadge color={color} />
                   </div>
+=======
+                  <h2 className="text-2xl font-bold">
+                    Color Variant{" "}
+                    {colorIndex + 1}
+                  </h2>
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
                   {product.colors.length >
                     1 && (
@@ -602,6 +627,7 @@ export default function AddProduct() {
                 </div>
 
                 <div className="mb-5">
+<<<<<<< HEAD
                   <label className="font-semibold block mb-2">
                     Low-stock alert for this colour
                   </label>
@@ -630,6 +656,8 @@ export default function AddProduct() {
                 </div>
 
                 <div className="mb-5">
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
                   <p className="font-semibold mb-2">
                     Choose Image File
                   </p>
@@ -801,11 +829,15 @@ export default function AddProduct() {
                       ) : (
                         <input
                           type="text"
+<<<<<<< HEAD
                           placeholder={
                         product.category === "New Born"
                           ? "Size, like 0-3 Months, 3-6 Months"
                           : "Size, like S, M, L, XL"
                       }
+=======
+                          placeholder="Size, like S, M, L, XL"
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
                           className="border p-4 rounded-xl"
                           value={size.size}
                           onChange={(e) =>

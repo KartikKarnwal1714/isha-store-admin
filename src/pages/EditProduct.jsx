@@ -4,7 +4,10 @@ import adminApi from "../api/client";
 import Layout from "../components/Layout";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { categories } from "../constants/categories";
+<<<<<<< HEAD
 import ColorStockBadge from "../components/ColorStockBadge";
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
 const cosmeticCategories = [
   "Mens-Cosmetics",
@@ -39,7 +42,10 @@ const emptySize = () => ({
 const emptyColor = () => ({
   colorName: "",
   colorCode: "#000000",
+<<<<<<< HEAD
   lowStockThreshold: 5,
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
   existingImages: [], // already saved on the server
   images: [], // newly chosen files
   imageUrls: [""], // new URL / base64 images
@@ -51,7 +57,10 @@ const sizeKind = (category) => {
   if (cosmeticCategories.includes(category)) return "cosmetic";
   if (category === "Kids") return "kids";
   if (category === "Jewellery") return "jewellery";
+<<<<<<< HEAD
   if (category === "New Born") return "newborn";
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
   return "clothing";
 };
 
@@ -123,7 +132,10 @@ export default function EditProduct() {
           ? p.colors.map((color) => ({
               colorName: color.colorName || "",
               colorCode: color.colorCode || "#000000",
+<<<<<<< HEAD
               lowStockThreshold: color.lowStockThreshold ?? 5,
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
               existingImages: Array.isArray(color.images)
                 ? color.images.filter(Boolean)
                 : [],
@@ -387,12 +399,15 @@ export default function EditProduct() {
       const colorsWithoutFiles = product.colors.map((color) => ({
         colorName: color.colorName,
         colorCode: color.colorCode,
+<<<<<<< HEAD
         lowStockThreshold: Number(
           color.lowStockThreshold === "" ||
             color.lowStockThreshold === undefined
             ? 5
             : color.lowStockThreshold
         ),
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
         imageCount: color.images.length,
         existingImages: color.existingImages,
         imageUrls: color.imageUrls.filter(
@@ -588,6 +603,7 @@ export default function EditProduct() {
               className="bg-white p-6 rounded-2xl shadow"
             >
               <div className="flex justify-between items-center mb-5">
+<<<<<<< HEAD
                 <div className="flex flex-wrap items-center gap-3">
                   <h2 className="text-2xl font-bold">
                     Color Variant {colorIndex + 1}
@@ -595,6 +611,11 @@ export default function EditProduct() {
 
                   <ColorStockBadge color={color} />
                 </div>
+=======
+                <h2 className="text-2xl font-bold">
+                  Color Variant {colorIndex + 1}
+                </h2>
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
                 {product.colors.length > 1 && (
                   <button
@@ -636,6 +657,7 @@ export default function EditProduct() {
                 />
               </div>
 
+<<<<<<< HEAD
               <div className="mb-5">
                 <label className="font-semibold block mb-2">
                   Low-stock alert for this colour
@@ -664,6 +686,8 @@ export default function EditProduct() {
                 </div>
               </div>
 
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
               {/* CURRENT (SAVED) IMAGES */}
               {color.existingImages.length > 0 && (
                 <div className="mb-5">
@@ -855,11 +879,15 @@ export default function EditProduct() {
                   ) : (
                     <input
                       type="text"
+<<<<<<< HEAD
                       placeholder={
                         product.category === "New Born"
                           ? "Size, like 0-3 Months, 3-6 Months"
                           : "Size, like S, M, L, XL"
                       }
+=======
+                      placeholder="Size, like S, M, L, XL"
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
                       className="border p-4 rounded-xl"
                       value={size.size}
                       onChange={(e) =>

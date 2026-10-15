@@ -183,12 +183,15 @@ export default function Dashboard() {
   const outOfStockProducts =
     analytics?.outOfStockProducts || [];
 
+<<<<<<< HEAD
   const lowStockColors =
     analytics?.lowStockColors || [];
 
   const outOfStockColors =
     analytics?.outOfStockColors || [];
 
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
   const orderStatusAnalytics =
     analytics?.orderStatusAnalytics || [];
 
@@ -480,6 +483,7 @@ export default function Dashboard() {
               title="Out of Stock"
               value={outOfStockProducts.length}
             />
+<<<<<<< HEAD
 
             <SmallMetricCard
               title="Colours Low"
@@ -490,6 +494,8 @@ export default function Dashboard() {
               title="Colours Out"
               value={outOfStockColors.length}
             />
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
           </div>
 
           <div className="mt-5">
@@ -1156,6 +1162,7 @@ export default function Dashboard() {
             )}
           </DashboardPanel>
         </section>
+<<<<<<< HEAD
 
         {/* ==================================================
             COLOUR-WISE STOCK ALERTS
@@ -1192,11 +1199,14 @@ export default function Dashboard() {
             )}
           </DashboardPanel>
         </section>
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
       </div>
     </Layout>
   );
 }
 
+<<<<<<< HEAD
 function ColorAlertTable({ items, label, tone }) {
   const badge =
     tone === "amber"
@@ -1257,6 +1267,8 @@ function ColorAlertTable({ items, label, tone }) {
   );
 }
 
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 // ======================================================
 // COMPONENTS
 // ======================================================

@@ -10,7 +10,10 @@ const categories = [
   "Mens-Cosmetics",
   "Womens-Cosmetics",
   "Kids-Cosmetics",
+<<<<<<< HEAD
   "New Born",
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 ];
 
 const emptyForm = {

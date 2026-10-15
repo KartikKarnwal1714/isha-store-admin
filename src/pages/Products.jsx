@@ -9,8 +9,11 @@ import { Link } from "react-router-dom";
 
 import Layout from "../components/Layout";
 
+<<<<<<< HEAD
 import { getColorStockInfo } from "../utils/stockStatus";
 
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 export default function Products() {
 
   const [products, setProducts] =
@@ -123,15 +126,19 @@ export default function Products() {
 
             let totalVariants = 0;
 
+<<<<<<< HEAD
             let lowColors = 0;
 
             let outColors = 0;
 
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
             product.colors?.forEach(
               (color) => {
 
                 totalVariants++;
 
+<<<<<<< HEAD
                 const info =
                   getColorStockInfo(color);
 
@@ -141,6 +148,8 @@ export default function Products() {
                 if (info.status === "out_of_stock")
                   outColors++;
 
+=======
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
                 color.sizes?.forEach(
                   (size) => {
 
@@ -188,20 +197,30 @@ export default function Products() {
 
                     <span
                       className={`px-4 py-2 rounded-full text-sm font-bold ${
+<<<<<<< HEAD
                         totalStock <= 0
                           ? "bg-red-100 text-red-500"
                           : lowColors > 0 || outColors > 0
                           ? "bg-amber-100 text-amber-700"
+=======
+                        totalStock <= 5
+                          ? "bg-red-100 text-red-500"
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
                           : "bg-green-100 text-green-600"
                       }`}
                     >
 
+<<<<<<< HEAD
                       {totalStock <= 0
                         ? "OUT OF STOCK"
                         : outColors > 0
                         ? `${outColors} COLOUR OUT`
                         : lowColors > 0
                         ? `${lowColors} COLOUR LOW`
+=======
+                      {totalStock <= 5
+                        ? "LOW STOCK"
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
                         : "IN STOCK"}
 
                     </span>
@@ -249,14 +268,21 @@ export default function Products() {
 
                   </div>
 
+<<<<<<< HEAD
                   {/* COLORS (colour-wise stock) */}
 
                   <div className="flex flex-wrap gap-2 mt-5">
+=======
+                  {/* COLORS */}
+
+                  <div className="flex flex-wrap gap-3 mt-5">
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
 
                     {product.colors?.map(
                       (
                         color,
                         index
+<<<<<<< HEAD
                       ) => {
 
                         const info =
@@ -295,6 +321,22 @@ export default function Products() {
                           </div>
                         );
                       }
+=======
+                      ) => (
+
+                        <div
+                          key={index}
+                          className="w-10 h-10 rounded-full border-2 border-gray-300"
+                          title={
+                            color.colorName
+                          }
+                          style={{
+                            background:
+                              color.colorCode,
+                          }}
+                        />
+                      )
+>>>>>>> 6149b786ffc2702f29b91158bf299973c2d9e081
                     )}
 
                   </div>
